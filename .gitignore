@@ -1,3 +1,4 @@
 .devcontainer
 .Rprofile
 renv/
+data-raw/

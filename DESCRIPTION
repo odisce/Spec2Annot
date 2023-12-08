@@ -18,8 +18,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
     data.table,
-    magrittr
+    magrittr,
+    stringr
 Suggests: 
     testthat (>= 3.0.0),
     covr
 Config/testthat/edition: 3
+LazyData: true
