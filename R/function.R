@@ -26,7 +26,7 @@ get_iso_from_annot <- function(annotation) {
     data.table("element" = gsub("([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})", "\\1\\2", temp[-1]),
                "text" = temp[-1],
                "elmt_nb" = gsub("([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})", "\\3", temp[-1])) %>%
-      merge(., Spec2Annot:::Element[, .(element = paste0(mass_nb, atomic_symb), isotope = mass_nb, mass = atomic_mass)], by = "element") %>%
+      merge(., Element[, .(element = paste0(mass_nb, atomic_symb), isotope = mass_nb, mass = atomic_mass)], by = "element") %>%
       {.[, ID := 1:.N][elmt_nb == "", elmt_nb := 1][]}
   } else {
     return(F)
@@ -60,7 +60,7 @@ element_from_formula <- function(formula) {
   temp <- stringr::str_extract_all(formula, "([A-Z][a-z]{0,1})") %>%
     unlist() %>%
     unique() %>%
-    {Spec2Annot:::Element[atomic_symb %in% .][, .SD[which.max(isotopic_compo)], by = atomic_symb][, .(element = atomic_symb, mass = atomic_mass, isotope = NA)]} %>%
+    {Element[atomic_symb %in% .][, .SD[which.max(isotopic_compo)], by = atomic_symb][, .(element = atomic_symb, mass = atomic_mass, isotope = NA)]} %>%
     rbind(., list("e-", 0.0005489, NA))
 
   ## Add atom count
@@ -192,9 +192,9 @@ mz_from_string <- function(string) {
 #' @examples
 #' mz_calc_ion(142.5236, "-H")
 mz_calc_ion <- function(mass, form = "-H") {
-  temp_dt <- Spec2Annot:::Monocharge_db[Formula == form,]
+  temp_dt <- Monocharge_db[Formula == form,]
   if (nrow(temp_dt) == 1) {
-    return(mass + Spec2Annot:::Monocharge_db[Formula == form, mz_query])
+    return(mass + Monocharge_db[Formula == form, mz_query])
   } else if (nrow(temp_dt) == 0) {
     warning("form not found")
     return(as.numeric(NA))
