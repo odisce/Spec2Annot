@@ -26,7 +26,7 @@ get_iso_from_annot <- function(annotation) {
     data.table("element" = gsub("([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})", "\\1\\2", temp[-1]),
                "text" = temp[-1],
                "elmt_nb" = gsub("([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})", "\\3", temp[-1])) %>%
-      merge(., Element[, .(element = paste0(mass_nb, atomic_symb), isotope = mass_nb, mass = atomic_mass)], by = "element") %>%
+      merge(., Spec2Annot::Element[, .(element = paste0(mass_nb, atomic_symb), isotope = mass_nb, mass = atomic_mass)], by = "element") %>%
       {.[, ID := 1:.N][elmt_nb == "", elmt_nb := 1][]}
   } else {
     return(F)
@@ -181,7 +181,7 @@ mz_from_string <- function(string) {
 #' Calculate ion mass using form
 #'
 #' @param mass numerical mass to use as base
-#' @param form chemical form to add or substract (on of `Monocharge_db[, unique(Formula)]`)
+#' @param form chemical form to add or substract (on of `Spec2Annot::Monocharge_db[, unique(Formula)]`)
 #'
 #' @return
 #' A numeric value corresponding to the mass form.
@@ -192,9 +192,9 @@ mz_from_string <- function(string) {
 #' @examples
 #' mz_calc_ion(142.5236, "-H")
 mz_calc_ion <- function(mass, form = "-H") {
-  temp_dt <- Monocharge_db[Formula == form,]
+  temp_dt <- Spec2Annot::Monocharge_db[Formula == form,]
   if (nrow(temp_dt) == 1) {
-    return(mass + Monocharge_db[Formula == form, mz_query])
+    return(mass + Spec2Annot::Monocharge_db[Formula == form, mz_query])
   } else if (nrow(temp_dt) == 0) {
     warning("form not found")
     return(as.numeric(NA))
