@@ -51,6 +51,9 @@ get_iso_from_annot <- function(annotation) {
 #' formula <- gen_formula_from_compo("[C6H12O2+H]+_13C2")
 #' element_from_formula(formula)
 element_from_formula <- function(formula) {
+  if (!grepl("\\*", formula)) {
+    formula <- gen_formula_from_compo(formula)
+  }
   ## Isotopes
   iso_res <- get_iso_from_annot(formula)
   if (grepl("_", formula)) {
