@@ -2,6 +2,7 @@
 # Spec2Annot
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/odisce/Spec2Annot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/odisce/Spec2Annot/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 **Spec2Annot** is an [R](https://www.r-project.org/) package which implement different ways to annotate 
