@@ -181,7 +181,7 @@ mz_from_string <- function(string) {
 #' Calculate ion mass using form
 #'
 #' @param mass numerical mass to use as base
-#' @param form chemical form to add or substract (on of `Spec2Annot::Monocharge_db[, unique(Formula)]`)
+#' @param form chemical form to add or substract (on of `Spec2Annot::db_monocharge[, unique(Formula)]`)
 #'
 #' @return
 #' A numeric value corresponding to the mass form.
@@ -192,9 +192,9 @@ mz_from_string <- function(string) {
 #' @examples
 #' mz_calc_ion(142.5236, "-H")
 mz_calc_ion <- function(mass, form = "-H") {
-  temp_dt <- Monocharge_db[Formula == form,]
+  temp_dt <- Spec2Annot::db_monocharge[Formula == form,]
   if (nrow(temp_dt) == 1) {
-    return(mass + Monocharge_db[Formula == form, mz_query])
+    return(mass + Spec2Annot::db_monocharge[Formula == form, mz_query])
   } else if (nrow(temp_dt) == 0) {
     warning("form not found")
     return(as.numeric(NA))

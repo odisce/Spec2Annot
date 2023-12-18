@@ -6,7 +6,7 @@
 
 #' Mono charged ions
 #' 
-"Monocharge_db"
+"db_monocharge"
 
 #' adduct data
 #' 

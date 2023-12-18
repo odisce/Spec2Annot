@@ -11,3 +11,9 @@ test_that("Spec2Annot::get_iso_from_annot", {
   expect_false(Spec2Annot::get_iso_from_annot("C6H12"))
 })
 
+test_that("Spec2Annot::mz_calc_ion", {
+  expect_true(Spec2Annot::mz_calc_ion(351.2564, form = "-H") %between% (350.2491 + c(-0.0001, +0.0001)))
+  expect_true(Spec2Annot::mz_calc_ion(351.2564, form = "+H") %between% (352.2637 + c(-0.0001, +0.0001)))
+  expect_true(Spec2Annot::mz_calc_ion(351.2564, form = "+NH4") %between% (369.2902 + c(-0.0001, +0.0001)))
+})
+
