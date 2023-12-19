@@ -3,14 +3,14 @@
 #' @param annotation Annotation in the form of `[M+H]+_13C1`
 #'
 #' @return
-#' Return a data.table with the following isotopes informations: 
+#' Return a data.table with the following isotopes informations:
 #'   - `element`: element type (13C, 18O, ...)
 #'   - `text`: label to use for the element
 #'   - `elmt_nb`: Element count
 #'   - `isotope`: Isotope number (13, 18, ...)
 #'   - `mass`: Mass of the isotope
 #'   - `ID`: Unique identifier (`integer`)
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -23,26 +23,48 @@ get_iso_from_annot <- function(annotation) {
     annotation <- temp[1]
 
     ## For each iso, get Elmt and nb
-    data.table("element" = gsub("([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})", "\\1\\2", temp[-1]),
-               "text" = temp[-1],
-               "elmt_nb" = gsub("([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})", "\\3", temp[-1])) %>%
-      merge(., Spec2Annot::Element[, .(element = paste0(mass_nb, atomic_symb), isotope = mass_nb, mass = atomic_mass)], by = "element") %>%
-      {.[, ID := 1:.N][elmt_nb == "", elmt_nb := 1][]}
+    data.table(
+      "element" = gsub(
+        "([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})",
+        "\\1\\2",
+        temp[-1]
+      ),
+      "text" = temp[-1],
+      "elmt_nb" = gsub(
+        "([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})",
+        "\\3",
+        temp[-1]
+      )
+    ) %>%
+      merge(
+        .,
+        Spec2Annot::Element[,
+          .(
+            element = paste0(mass_nb, atomic_symb),
+            isotope = mass_nb,
+            mass = atomic_mass
+          )
+        ],
+        by = "element"
+      ) %>%
+      {
+        .[, ID := seq_len(.N)][elmt_nb == "", elmt_nb := 1][]
+      }
   } else {
-    return(F)
+    return(FALSE)
   }
 }
 
 #' Get element count from formula
 #'
 #' @param formula Formula as returned by `gen_formula_from_compo`
-#' 
+#'
 #' @import data.table magrittr
 #' @importFrom stringr str_extract_all
 #'
 #' @return
 #' Return a data.table with element count
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -57,27 +79,39 @@ element_from_formula <- function(formula) {
   ## Isotopes
   iso_res <- get_iso_from_annot(formula)
   if (grepl("_", formula)) {
-    formula <- strsplit(formula, "_") %>% unlist() %>% {.[1]}
+    formula <- strsplit(formula, "_") %>%
+      unlist() %>%
+      {
+        .[1]
+      }
   }
 
   temp <- stringr::str_extract_all(formula, "([A-Z][a-z]{0,1})") %>%
     unlist() %>%
     unique() %>%
-    {Spec2Annot::Element[atomic_symb %in% .][, .SD[which.max(isotopic_compo)], by = atomic_symb][, .(element = atomic_symb, mass = atomic_mass, isotope = NA)]} %>%
+    {
+      Spec2Annot::Element[
+        atomic_symb %in% .
+      ][,
+        .SD[which.max(isotopic_compo)],
+        by = atomic_symb
+      ][,
+        .(element = atomic_symb, mass = atomic_mass, isotope = NA)
+      ]
+    } %>%
     rbind(., list("e-", 0.0005489, NA))
 
   ## Add atom count
   temp[, elmt_nb := {
-    # gsub(paste0(element, "(?![A-z])"), "1", formula, perl = T) %>% # Replace current element by 1
-      gsub(paste0("(", element, ")([^a-z]|$)"), "1\\2", formula) %>%
-      gsub("e\\-|([A-Z][a-z]{0,2})", "0", .) %>% # replace all other element by 0 %>%
+    gsub(paste0("(", element, ")([^a-z]|$)"), "1\\2", formula) %>%
+      gsub("e\\-|([A-Z][a-z]{0,2})", "0", .) %>%
       str2expression() %>%
       eval()
   }, by = .(element, mass)]
 
   ## Remove isotopes from elements
   if (!isFALSE(iso_res)) {
-    iso_res[, ID := 1:.N]
+    iso_res[, ID := seq_len(.N)]
     iso_res[, {
       elem <- gsub("[0-9]{1,2}([A-Z]{1}[a-z]{0,2})", "\\1", element)
       nb_to_rem <- as.numeric(elmt_nb)
@@ -93,7 +127,7 @@ element_from_formula <- function(formula) {
         temp,
         iso_res
       ),
-      fill = T
+      fill = TRUE
     )
   }
 
@@ -104,9 +138,10 @@ element_from_formula <- function(formula) {
 #'
 #' @param compo Elemental composition as a string (ex.: "C6H12O3NH2")
 #'
-#' @return Return a string with an arithmetic formula used to calculate the final 
-#' mass. This function can be used to check if the string parser behave correctly.
-#' 
+#' @return Return a string with an arithmetic formula
+#' used to calculate the final mass. This function can
+#' be used to check if the string parser behave correctly.
+#'
 #' @export
 #' @import magrittr
 #'
@@ -123,7 +158,11 @@ gen_formula_from_compo <- function(compo) {
 
   if (grepl("_", compo)) {
     ## If iso, remove them before extracting formula
-    compo <- strsplit(compo, "_") %>% unlist() %>% {.[1]}
+    compo <- strsplit(compo, "_") %>%
+      unlist() %>%
+      {
+        .[1]
+      }
   }
 
   ## Searh multimeres
@@ -131,19 +170,21 @@ gen_formula_from_compo <- function(compo) {
     gsub("\\[", "(", .) %>% ## replace brackets by parenthesis
     gsub("\\]", ")", .) %>% ## replace brackets by parenthesis
     paste0("(", ., ")") %>%
-    gsub("(\\+|\\-)", "\\)\\1\\(", .) %>% ## Add parenthesis by compo groups
-    gsub("(\\+|\\-)\\(\\)$", "\\1", .) %>% ## Remove empty ending parenthesis if charge
-    gsub("^\\(\\)", "", .) %>% ## Remove empty starting parenthesis if starting sign
-    gsub("([A-Z]{1}[a-z]{0,1})([0-9]{1,4})", "\\2\\*\\1", .) %>% ## transform operation ex: C2 to 2*C
-    gsub("([0-9]{1,4})([A-Z]{1}[a-z]{0,1})", "\\1\\*\\2", .) %>% ## transform operation ex: 2C to 2*C
-    gsub("([A-Z]{1}[a-z]{0,1})", "\\1\\+", .) %>% ## Extract 1 character elements
-    gsub("([+|-])\\)", ")", .) %>% ## Resolve parenthesis signs
-    gsub("([A-Z][a-z]{0,1})(\\+$)", "\\1", .) %>% {  ## Delete ending artefact + sign
+    gsub("(\\+|\\-)", "\\)\\1\\(", .) %>%
+    gsub("(\\+|\\-)\\(\\)$", "\\1", .) %>%
+    gsub("^\\(\\)", "", .) %>%
+    gsub("([A-Z]{1}[a-z]{0,1})([0-9]{1,4})", "\\2\\*\\1", .) %>%
+    gsub("([0-9]{1,4})([A-Z]{1}[a-z]{0,1})", "\\1\\*\\2", .) %>%
+    gsub("([A-Z]{1}[a-z]{0,1})", "\\1\\+", .) %>%
+    gsub("([+|-])\\)", ")", .) %>%
+    gsub("([A-Z][a-z]{0,1})(\\+$)", "\\1", .) %>%
+    {
       ifelse(
-        grepl("(\\+)$", .), gsub("(\\+)$", "-e-", .), ## if string terminate by + = -e-
+        grepl("(\\+)$", .), gsub("(\\+)$", "-e-", .),
         ifelse(
-          grepl("(\\-)$", .), gsub("(\\-)$", "+e-", .), ## if string terminate by - = +e-
-          .)
+          grepl("(\\-)$", .), gsub("(\\-)$", "+e-", .),
+          .
+        )
       )
     } %>%
     gsub("([0-9])\\(", "\\1*(", .)
@@ -162,7 +203,7 @@ gen_formula_from_compo <- function(compo) {
 #'
 #' @return
 #' Return a numeric value corresponding to the mass of the `string` input
-#' 
+#'
 #' @export
 #' @import data.table magrittr
 #' @importFrom stringr str_extract_all
@@ -184,25 +225,31 @@ mz_from_string <- function(string) {
 #' Calculate ion mass using form
 #'
 #' @param mass numerical mass to use as base
-#' @param form chemical form to add or substract (on of `Spec2Annot::db_monocharge[, unique(Formula)]`)
+#' @param form chemical form to add or substract (on
+#'             of `Spec2Annot::db_monocharge[, unique(Formula)]`)
 #'
 #' @return
 #' A numeric value corresponding to the mass form.
-#' 
+#'
 #' @export
 #' @import data.table
 #'
 #' @examples
 #' mz_calc_ion(142.5236, "-H")
 mz_calc_ion <- function(mass, form = "-H") {
-  temp_dt <- Spec2Annot::db_monocharge[Formula == form,]
+  temp_dt <- Spec2Annot::db_monocharge[Formula == form, ]
   if (nrow(temp_dt) == 1) {
     return(mass + Spec2Annot::db_monocharge[Formula == form, mz_query])
   } else if (nrow(temp_dt) == 0) {
     warning("form not found")
     return(as.numeric(NA))
   } else if (nrow(temp_dt) > 1) {
-    warning(paste0("Multiple form available, choose one: ", paste0(temp_dt$Formula, collapse = ", ")))
+    warning(
+      paste0(
+        "Multiple form available, choose one: ",
+        paste0(temp_dt$Formula, collapse = ", ")
+      )
+    )
     return(as.numeric(NA))
   }
 }
@@ -214,7 +261,7 @@ mz_calc_ion <- function(mass, form = "-H") {
 #'
 #' @return
 #' A numeric value corresponding to the ppm deviation between massa and massb
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -233,7 +280,7 @@ mz_ppm <- function(massa, massb) {
 #' @return
 #' A numeric vector with the mass range corresponding to mass +- ppm/2.
 #' The range difference is equal to the asked ppm
-#' 
+#'
 #' @export
 #'
 #' @examples

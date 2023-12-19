@@ -10,8 +10,9 @@ gen_formula_from_compo(compo)
 \item{compo}{Elemental composition as a string (ex.: "C6H12O3NH2")}
 }
 \value{
-Return a string with an arithmetic formula used to calculate the final
-mass. This function can be used to check if the string parser behave correctly.
+Return a string with an arithmetic formula
+used to calculate the final mass. This function can
+be used to check if the string parser behave correctly.
 }
 \description{
 Generate formula from composition

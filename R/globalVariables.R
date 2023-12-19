@@ -1,0 +1,15 @@
+globalVariables(
+  c(
+    ".",
+    "atomic_symb",
+    "atomic_mass",
+    "Formula",
+    "ID",
+    "isotopic_compo",
+    "mz_query",
+    "mass_nb",
+    "mass",
+    "elmt_nb",
+    "element"
+  )
+)

@@ -6,6 +6,8 @@
 \alias{Spec2Annot-package}
 \title{Spec2Annot: Annotation of Mass Spectra}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 This R package implement different way to annotate and query Mass spectra, using brute-force, isotopic or fragmentation pattern, prior informations on losses or adduct, etc...
 }
 \author{

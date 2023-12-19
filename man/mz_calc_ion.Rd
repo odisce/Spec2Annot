@@ -9,7 +9,8 @@ mz_calc_ion(mass, form = "-H")
 \arguments{
 \item{mass}{numerical mass to use as base}
 
-\item{form}{chemical form to add or substract (on of \code{Spec2Annot::db_monocharge[, unique(Formula)]})}
+\item{form}{chemical form to add or substract (on
+of \code{Spec2Annot::db_monocharge[, unique(Formula)]})}
 }
 \value{
 A numeric value corresponding to the mass form.

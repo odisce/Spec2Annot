@@ -9,7 +9,7 @@
 
 **Spec2Annot** is an [R](https://www.r-project.org/) package which implement different ways to annotate 
 and query mass spectra. An implementation on [Galaxy](https://workflow4metabolomics.usegalaxy.fr/) of those 
-functionalities are under progress.
+functionalities is under progress.
 
 ## Installation
 

@@ -14,6 +14,7 @@ Element
 Periodic table as a data.table
 }
 \references{
-\url{https://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&ascii=ascii2&isotype=some}
+\url{https://physics.nist.gov/cgi-bin/Compositions/
+stand_alone.pl?ele=&ascii=ascii2&isotype=some}
 }
 \keyword{datasets}
