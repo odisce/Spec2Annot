@@ -16,8 +16,12 @@ Return a data.table with element count
 Get element count from formula
 }
 \examples{
+# Exempl A
 formula <- gen_formula_from_compo("C6H2O3Ca2K1")
 element_from_formula(formula)
+
+# Exempl B
 formula <- gen_formula_from_compo("[C6H12O2+H]+_13C2")
 element_from_formula(formula)
+
 }

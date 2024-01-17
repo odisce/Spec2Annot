@@ -29,6 +29,16 @@
 #'
 "spectra_full"
 
+#' Spectra exemple
+#'
+#' MS2 spectrum of C10H12N5O6P1
+#' Precursor mass: 330.0597
+#' Mode: ESI +
+#' Collision mode: HCD
+#' Energy: 30
+#'
+"spectra_ms2"
+
 #' Valence data
 #'
 "valence_db"

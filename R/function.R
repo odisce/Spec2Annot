@@ -23,7 +23,7 @@ get_iso_from_annot <- function(annotation) {
     annotation <- temp[1]
 
     ## For each iso, get Elmt and nb
-    data.table(
+    output <- data.table(
       "element" = gsub(
         "([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})",
         "\\1\\2",
@@ -35,25 +35,265 @@ get_iso_from_annot <- function(annotation) {
         "\\3",
         temp[-1]
       )
-    ) %>%
-      merge(
-        .,
-        Spec2Annot::Element[,
-          .(
-            element = paste0(mass_nb, atomic_symb),
-            isotope = mass_nb,
-            mass = atomic_mass
-          )
-        ],
-        by = "element"
-      ) %>%
-      {
-        .[, ID := seq_len(.N)][elmt_nb == "", elmt_nb := 1][]
-      }
+    )
+
+    output <- merge(
+      output,
+      Spec2Annot::Element[,
+        .(
+          element = paste0(mass_nb, atomic_symb),
+          isotope = mass_nb,
+          mass = atomic_mass
+        )
+      ],
+      by = "element"
+    ) %>% {
+      .[, ID := seq_len(.N)][
+        elmt_nb == "", elmt_nb := 1
+      ][,
+        elmt_nb := as.numeric(elmt_nb)
+      ][]
+    }
+
+    if (nrow(output) <= 0) {
+      return(FALSE)
+    } else {
+      return(output)
+    }
   } else {
     return(FALSE)
   }
 }
+
+#' Return a string from an element table
+#'
+#' @param element_dt A data.table as returned by
+#'                   `Spec2Annot::element_from_formula()`
+#' @return
+#' Return a string from an element table
+#'
+#' @import data.table
+#'
+#' @export
+#'
+#' @examples
+#' "C6H12O3" %>%
+#'   gen_formula_from_compo() %>%
+#'   element_from_formula() %>%
+#'   string_from_element()
+string_from_element <- function(element_dt) {
+  ## Add isotope elements
+  element_dt[, iso_element := ifelse(
+    is.na(isotope),
+    element,
+    gsub("[0-9]{1,2}([A-Z]{1}[a-z]{0,2})", "\\1", element)
+  )]
+  compoa <- element_dt[
+    elmt_nb > 0, .(elmt_cnt = sum(elmt_nb)), by = iso_element
+  ][
+    order(iso_element),
+    paste0(iso_element, elmt_cnt, collapse = "")
+  ]
+
+  if (element_dt[!is.na(isotope), .N] > 0) {
+    compob <- element_dt[
+      !is.na(isotope),
+    ][
+      order(iso_element),
+    ][,
+      .(text = paste0(isotope, iso_element, elmt_nb, collapse = "")),
+      by = "element"
+    ][,
+      paste0(text, collapse = "_")
+    ]
+    compoa <- paste0(compoa, "_", compob)
+  }
+  return(compoa)
+}
+
+#' Calculate DBE from an elemental composition
+#'
+#' Calculation is performed as explained in
+#' http://ms-textbook.com/chapter-6/answer-6-3/
+#'
+#' @param element_dt Either a data.table as returned by
+#'                   `Spec2Annot::element_from_formula()`
+#'                   or a string as "C18H12O3P".
+#' @return
+#' Return a string from an element table
+#'
+#' @import data.table magrittr
+#'
+#' @export
+#'
+#' @examples
+#' get_dbe("C32H25N3O2S")
+get_dbe <- function(element_dt) {
+  if (
+    !is.data.table(element_dt) &&
+      length(element_dt) == 1 &&
+      is.character(element_dt)
+  ) {
+    element_dt <- gen_formula_from_compo(element_dt) %>%
+      element_from_formula()
+  }
+  ## Count isotope as element
+  element_dt[
+    ,
+    elmt_dbe := gsub(
+      "^([0-9]{0,3})([A-Z]{1}[a-z]{0,2})$",
+      "\\2",
+      element
+    )
+  ]
+
+  element_dt <- element_dt[elmt_nb > 0, ]
+  ## Get C nb
+  elem_grp <- list(
+    "C" = "C",
+    "Y" = c("H", "F", "Cl", "Br", "I", "At"),
+    "Z" = c("N", "P")
+  )
+
+  elem_res <- lapply(elem_grp, function(x) {
+    temp_dt <- element_dt[elmt_dbe %in% x, ]
+    if (nrow(temp_dt) > 0) {
+      out <- temp_dt[, sum(elmt_nb)]
+    } else {
+      out <- 0
+    }
+    return(out)
+  })
+
+  dbe <- elem_res$C - elem_res$Y / 2 + elem_res$Z / 2 + 1
+  return(dbe)
+}
+
+#' Check Nitrogen rule
+#'
+#' Calculation is performed as explained in
+#' https://en.wikipedia.org/wiki/Nitrogen_rule
+#'
+#' @param n Nitrogen atom number
+#' @param mass Ion mass
+#' @return
+#' A logical corresponding to `TRUE` if the N
+#' rule is respected or `FALSE` if not.
+#'
+#' @export
+#' @examples
+#' get_nrule(5, 125.1235)
+get_nrule <- function(n, mass) {
+  meven <- ifelse(floor(mass) %% 2 == 0,
+    TRUE,
+    FALSE
+  )
+  neven <- ifelse(n %% 2 == 0,
+    TRUE,
+    FALSE
+  )
+  return(meven == neven)
+}
+
+#' Check Senior theorems
+#'
+#' Check the Senior theorems as described in Morikawa and
+#' Newbold (2003) with the following:
+#' i) the sum of valencies is an even number, or the total
+#' number of atoms having odd valencies is even.
+#' ii) the sum of valencies is greater than or equal to twice
+#' the maximum valency.
+#' iii) the sum of valencies is greater than or equal to twice
+#' the number of atoms minus 1.
+#'
+#' @inheritParams get_dbe
+#' @param global Logical to return a unique value if all the
+#'               theorem are valid (`TRUE`) or a vector with
+#'               the result of each theorem (`FALSE`).
+
+#' @return
+#' If global is set to `TRUE`, return a unique logical value
+#' corresponding to `TRUE` if all the theorems pass or `FALSE`
+#' if any of them isn't.
+#' If global is set to `FALSE`, return a named logical vector with
+#' the result of each theorem.
+#'
+#' @references
+#' \enumerate{
+#' \item Senior JK (1951) Partitions and Their Representative Graphs. Am J Math 73:663. doi: 10.2307/2372318
+#' \item Morikawa T, Newbold BT (2003) Analogous odd-even parities in mathematics and chemistry. Chemistry 12:445–450
+#'}
+#'
+#' @export
+#' @examples
+#' get_senior("C6H12O3")
+get_senior <- function(element_dt, global = TRUE) {
+  if (
+    !is.data.table(element_dt) &&
+      length(element_dt) == 1 &&
+      is.character(element_dt)
+  ) {
+    element_dt <- gen_formula_from_compo(element_dt) %>%
+      element_from_formula()
+  }
+  # Sum of valence minus twice number of atome minus one
+  elem_sum <- element_dt[, .(elmt_nb = sum(elmt_nb)), by = elmt]
+  elem_val <- merge(
+    elem_sum[, .(elmt, elmt_nb)],
+    valence_db[, .(elmt = atomic_symb, val = valence)],
+    by = "elmt"
+  )
+
+  ## Store results of the 3 theorems
+  output <- c(FALSE, FALSE, FALSE)
+  names(output) <- c("Senior1", "Senior2", "Senior3")
+
+  ## Theorem 1
+  if (
+    (elem_val[, sum(val * elmt_nb)] %% 2 == 0) ||
+      (elem_val[val %% 2, sum(elmt_nb)] %% 2 == 0)
+  ) {
+    output[1] <- TRUE
+  }
+
+  ## Theorem 2
+  if (
+    (elem_val[, sum(val * elmt_nb)]) >=
+      (2 * elem_val[, max(val)])
+  ) {
+    output[2] <- TRUE
+  }
+
+  ## Theorem 3
+  if (
+    (elem_val[, sum(val * elmt_nb)]) >=
+      (2 * elem_val[, sum(elmt_nb)] - 1)
+  ) {
+    output[3] <- TRUE
+  }
+
+  ## Output
+  if (isTRUE(global)) {
+    return(all(output))
+  } else {
+    return(output)
+  }
+}
+
+#' Return the mass of an electorn
+#'
+#' @return
+#' Return the mass of an electron as
+#' a numeric value
+#'
+#' @export
+#'
+#' @examples
+#' electron_mass()
+electron_mass <- function() {
+  return(as.numeric(0.0005489))
+}
+
 
 #' Get element count from formula
 #'
@@ -68,10 +308,14 @@ get_iso_from_annot <- function(annotation) {
 #' @export
 #'
 #' @examples
+#' # Exempl A
 #' formula <- gen_formula_from_compo("C6H2O3Ca2K1")
 #' element_from_formula(formula)
+#'
+#' # Exempl B
 #' formula <- gen_formula_from_compo("[C6H12O2+H]+_13C2")
 #' element_from_formula(formula)
+#'
 element_from_formula <- function(formula) {
   if (!grepl("\\*", formula)) {
     formula <- gen_formula_from_compo(formula)
@@ -99,7 +343,7 @@ element_from_formula <- function(formula) {
         .(element = atomic_symb, mass = atomic_mass, isotope = NA)
       ]
     } %>%
-    rbind(., list("e-", 0.0005489, NA))
+    rbind(., list("e-", electron_mass(), NA))
 
   ## Add atom count
   temp[, elmt_nb := {
@@ -130,7 +374,7 @@ element_from_formula <- function(formula) {
       fill = TRUE
     )
   }
-
+  temp[, elmt := gsub("^([0-9]{0,2})([A-Z]{1}[a-z]{0,2})$", "\\2", element)]
   return(temp[])
 }
 
@@ -252,24 +496,6 @@ mz_calc_ion <- function(mass, form = "-H") {
     )
     return(as.numeric(NA))
   }
-}
-
-#' Calculate ppm deviation between two masses
-#'
-#' @param massa First mass as `numeric()`
-#' @param massb Second mass as `numeric()`
-#'
-#' @return
-#' A numeric value corresponding to the ppm deviation between massa and massb
-#'
-#' @export
-#'
-#' @examples
-#' mz_ppm(142.5236, 142.5241)
-mz_ppm <- function(massa, massb) {
-  data <- c(massa, massb)
-  mass_error <- max(data) - min(data)
-  return((mass_error / mean(data)) * 10^6)
 }
 
 #' Calculate mass range using a ppm deviation

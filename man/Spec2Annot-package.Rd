@@ -18,6 +18,7 @@ Other contributors:
   \item Etienne Thevenot \email{etienne.thevenot@cea.fr} [contributor]
   \item Eric Venot \email{eric.venot@cea.fr} [reviewer]
   \item Annelaure Damont \email{annelaure.damont@cea.fr} [contributor]
+  \item Anaïs Legrand \email{anais.legrand@cea.fr} [contributor]
 }
 
 }

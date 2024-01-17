@@ -10,6 +10,35 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// mz_ppm
+double mz_ppm(double massa, double massb);
+RcppExport SEXP _Spec2Annot_mz_ppm(SEXP massaSEXP, SEXP massbSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type massa(massaSEXP);
+    Rcpp::traits::input_parameter< double >::type massb(massbSEXP);
+    rcpp_result_gen = Rcpp::wrap(mz_ppm(massa, massb));
+    return rcpp_result_gen;
+END_RCPP
+}
+// brute_force_const
+Rcpp::NumericMatrix brute_force_const(double mass, double ppm, Rcpp::NumericVector mass_vc, Nullable<Rcpp::NumericVector> maxiter_vc_, Rcpp::CharacterVector name_vc, int debugl, int debugit);
+RcppExport SEXP _Spec2Annot_brute_force_const(SEXP massSEXP, SEXP ppmSEXP, SEXP mass_vcSEXP, SEXP maxiter_vc_SEXP, SEXP name_vcSEXP, SEXP debuglSEXP, SEXP debugitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type mass(massSEXP);
+    Rcpp::traits::input_parameter< double >::type ppm(ppmSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type mass_vc(mass_vcSEXP);
+    Rcpp::traits::input_parameter< Nullable<Rcpp::NumericVector> >::type maxiter_vc_(maxiter_vc_SEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type name_vc(name_vcSEXP);
+    Rcpp::traits::input_parameter< int >::type debugl(debuglSEXP);
+    Rcpp::traits::input_parameter< int >::type debugit(debugitSEXP);
+    rcpp_result_gen = Rcpp::wrap(brute_force_const(mass, ppm, mass_vc, maxiter_vc_, name_vc, debugl, debugit));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mz_vec_aggregate
 Rcpp::NumericVector mz_vec_aggregate(Rcpp::NumericVector xx, double tt);
 RcppExport SEXP _Spec2Annot_mz_vec_aggregate(SEXP xxSEXP, SEXP ttSEXP) {
@@ -24,6 +53,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_Spec2Annot_mz_ppm", (DL_FUNC) &_Spec2Annot_mz_ppm, 2},
+    {"_Spec2Annot_brute_force_const", (DL_FUNC) &_Spec2Annot_brute_force_const, 7},
     {"_Spec2Annot_mz_vec_aggregate", (DL_FUNC) &_Spec2Annot_mz_vec_aggregate, 2},
     {NULL, NULL, 0}
 };
