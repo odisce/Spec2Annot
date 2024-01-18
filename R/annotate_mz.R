@@ -115,8 +115,13 @@ annotate_mz <- function(
   ## Parity [ check with Annelaure]
 
   ## nrule
-  get_nrule_vec <- Vectorize(get_nrule, c("n", "mass"))
-  mz_dt_annot[, nrule := get_nrule_vec(N, mass)]
+  if ("N" %in% names(mz_dt_annot)) {
+    get_nrule_vec <- Vectorize(get_nrule, c("n", "mass"))
+    mz_dt_annot[, nrule := get_nrule_vec(N, mass)]
+  } else {
+    mz_dt_annot[, nrule := as.logical(NA)]
+  }
+  
 
   ## Senior
   get_senior_vec <- Vectorize(get_senior, c("element_dt"))
