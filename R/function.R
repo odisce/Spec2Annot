@@ -240,7 +240,7 @@ get_senior <- function(element_dt, global = TRUE) {
   elem_sum <- element_dt[, .(elmt_nb = sum(elmt_nb)), by = elmt]
   elem_val <- merge(
     elem_sum[, .(elmt, elmt_nb)],
-    valence_db[, .(elmt = atomic_symb, val = valence)],
+    Spec2Annot::valence_db[, .(elmt = atomic_symb, val = valence)],
     by = "elmt"
   )
 
