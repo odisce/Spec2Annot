@@ -11,6 +11,12 @@
 #' @export
 add_formula_to_annot <- function(mzannot_dt) {
   annot_dt <- copy(mzannot_dt)
+
+  if (nrow(annot_dt) <= 0) {
+    message("0 annotation, returning empty table")
+    mzannot_dt
+    return(mzannot_dt)
+  }
   annot_dt[, iter_annot := seq_len(.N)]
 
   ## Get column corresponding to elements
@@ -105,41 +111,47 @@ annotate_mz <- function(
     by = .(ion_iter, mz, i, irel)
   ]
 
-  mz_dt_annot <- add_formula_to_annot(mz_dt_annot)
-
-  ## Scores
-  ##   DBE
-  get_dbe_vec <- Vectorize(get_dbe, "element_dt")
-  mz_dt_annot[, DBE := get_dbe_vec(formula)]
-
-  ## Parity [ check with Annelaure]
-
-  ## nrule
-  if ("N" %in% names(mz_dt_annot)) {
-    get_nrule_vec <- Vectorize(get_nrule, c("n", "mass"))
-    mz_dt_annot[, nrule := get_nrule_vec(N, mass)]
+  if (nrow(mz_dt_annot) <= 0) {
+    output <- mz_dt_annot
+    output[, formula := character()]
+    output[, DBE := numeric()]
+    output[, nrule := logical()]
+    output[, senior := logical()]
   } else {
-    mz_dt_annot[, nrule := as.logical(NA)]
+    mz_dt_annot <- add_formula_to_annot(mz_dt_annot)
+    ## Scores
+    ##   DBE
+    get_dbe_vec <- Vectorize(get_dbe, "element_dt")
+    mz_dt_annot[, DBE := get_dbe_vec(formula)]
+
+    ## Parity [ check with Annelaure]
+
+    ## nrule
+    if ("N" %in% names(mz_dt_annot)) {
+      get_nrule_vec <- Vectorize(get_nrule, c("n", "mass"))
+      mz_dt_annot[, nrule := get_nrule_vec(N, mass)]
+    } else {
+      mz_dt_annot[, nrule := as.logical(NA)]
+    }
+    
+
+    ## Senior
+    get_senior_vec <- Vectorize(get_senior, c("element_dt"))
+    mz_dt_annot[, senior := get_senior_vec(element_dt = formula, global = TRUE)]
+
+    ## Assemble data
+    col_to_concatenate <- c("formula", "ppm", "DBE", "nrule", "senior")
+    output <- mz_dt_annot[order(-nrule, -senior),
+      lapply(.SD, function(x) {
+        if (is.numeric(x)) {
+          x <- sprintf("%.2f", x)
+        }
+        paste0(x, collapse = "/")
+      }),
+      by = .(ion_iter, mz, i, irel),
+      .SDcols = col_to_concatenate
+    ]
   }
-  
-
-  ## Senior
-  get_senior_vec <- Vectorize(get_senior, c("element_dt"))
-  mz_dt_annot[, senior := get_senior_vec(element_dt = formula, global = TRUE)]
-
-  ## Assemble data
-  col_to_concatenate <- c("formula", "ppm", "DBE", "nrule", "senior")
-  output <- mz_dt_annot[order(-nrule, -senior),
-    lapply(.SD, function(x) {
-      if (is.numeric(x)) {
-        x <- sprintf("%.2f", x)
-      }
-      paste0(x, collapse = "/")
-    }),
-    by = .(ion_iter, mz, i, irel),
-    .SDcols = col_to_concatenate
-  ]
-
   output_bind <- rbindlist(
     list(
       mz_dt[
