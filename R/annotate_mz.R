@@ -22,7 +22,9 @@ add_formula_to_annot <- function(mzannot_dt) {
   ## Get column corresponding to elements
   names_vc <- gsub("^([0-9]{0,3})([A-Z]{1}[a-z]{0,2})$", "\\2", names(annot_dt))
   names(names_vc) <- names(annot_dt)
-  col_elem <- names_vc[names_vc %in% Spec2Annot::Element[, unique(atomic_symb)]] %>%
+  col_elem <- names_vc[
+    names_vc %in% Spec2Annot::Element[, unique(atomic_symb)]
+  ] %>%
     names()
 
   annot_dt[, "formula" := {
@@ -133,7 +135,6 @@ annotate_mz <- function(
     } else {
       mz_dt_annot[, nrule := as.logical(NA)]
     }
-    
 
     ## Senior
     get_senior_vec <- Vectorize(get_senior, c("element_dt"))

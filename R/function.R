@@ -483,17 +483,9 @@ mz_from_string <- function(string) {
 mz_calc_ion <- function(mass, form = "-H") {
   temp_dt <- Spec2Annot::db_monocharge[Formula == form, ]
   if (nrow(temp_dt) == 1) {
-    return(mass + Spec2Annot::db_monocharge[Formula == form, mz_query])
+    return(mass + unique(Spec2Annot::db_monocharge[Formula == form, mz_query]))
   } else if (nrow(temp_dt) == 0) {
     warning("form not found")
-    return(as.numeric(NA))
-  } else if (nrow(temp_dt) > 1) {
-    warning(
-      paste0(
-        "Multiple form available, choose one: ",
-        paste0(temp_dt$Formula, collapse = ", ")
-      )
-    )
     return(as.numeric(NA))
   }
 }

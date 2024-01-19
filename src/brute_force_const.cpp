@@ -151,12 +151,6 @@ Rcpp::NumericMatrix brute_force_const(
       }
     }
 
-    // If all iterators are zero, stop
-    if (sum(cur_cnt) <= 0) {
-      stopcond = false;
-      break;
-    }
-
     // Decrease current iterator and check if < 0
     cur_cnt[cnt_pos] = cur_cnt[cnt_pos]-1;
     if (cur_cnt[cnt_pos] < 0) {

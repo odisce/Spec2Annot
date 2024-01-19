@@ -2,6 +2,7 @@ test_that("Spec2Annot::get_iso_from_annot", {
   temp <- Spec2Annot::get_iso_from_annot("C6H12_13C2")
   expect_true(data.table::is.data.table(temp))
   expect_true(temp[element == "13C", elmt_nb] == 2)
+  expect_false(Spec2Annot::get_iso_from_annot("ZSDR"))
 
   temp <- Spec2Annot::get_iso_from_annot("C6H12_13C4_18O1")
   expect_true(data.table::is.data.table(temp))
@@ -9,6 +10,8 @@ test_that("Spec2Annot::get_iso_from_annot", {
   expect_true(temp[element == "18O", elmt_nb] == 1)
 
   expect_false(Spec2Annot::get_iso_from_annot("C6H12"))
+  expect_false(Spec2Annot::get_iso_from_annot("SDMLX"))
+  expect_false(Spec2Annot::get_iso_from_annot("SD_MLX"))
 })
 
 test_that("Spec2Annot::mz_calc_ion", {
@@ -24,6 +27,7 @@ test_that("Spec2Annot::mz_calc_ion", {
     Spec2Annot::mz_calc_ion(351.2564, form = "+NH4") %between%
       (369.2902 + c(-0.0001, +0.0001))
   )
+  testthat::expect_warning(is.na(Spec2Annot::mz_calc_ion(351.2564, form = "+NHCMDL")))
 })
 
 test_that("Spec2Annot::gen_formula_from_compo", {
@@ -59,6 +63,7 @@ test_that("Spec2Annot::element_from_formula", {
   expect_true(temp_dt[element == "H", elmt_nb] == 12)
   expect_true(temp_dt[element == "O", elmt_nb] == 3)
   expect_true(temp_dt[element == "13C", elmt_nb] == 3)
+  expect_error(Spec2Annot::element_from_formula("H12O3_13C1"))
 })
 
 
