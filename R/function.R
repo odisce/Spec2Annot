@@ -506,3 +506,227 @@ mz_calc_ion <- function(mass, form = "-H") {
 mz_range <- function(mass, ppm) {
   mass + (ppm * mass / 10^6 / 2) * c(-1, 1)
 }
+
+#' Function to generate isotopes from an exact mass
+#'
+#' @param mz Exact mass
+#' @param label (optional) a string to use in the ion labels
+#'              if not set it will be just 'X'.
+#' @param db_iso A data.table with isotopes informations
+#'        (see `Spec2Annot::Isotopes_db` as example).
+#'
+#' @return
+#' Generate a data.table with isotopes mass and label
+#' based on the `mz` value. By default, the isotopes are
+#' chosen from `Spec2Annot::Isotopes_db` but it could
+#' be specified by the user.
+#'
+#' @export
+#' @import data.table magrittr
+#'
+#' @examples
+#' gen_isotopes(125.53658, "Isovalerine")
+gen_isotopes <- function(mz, label = NULL, db_iso = Spec2Annot::Isotopes_db) {
+  temp_db <- copy(db_iso)
+  temp_db[, ID := 1:.N]
+  if (is.null(label)) {
+    label <- "X"
+  }
+  temp_db[
+    ,
+    .(label = paste0("[", label, "]_", isotope), mz_query = mz + mass_diff),
+    by = .(ID, isotope)
+  ]
+}
+
+#' Function to generate monocharges from an exact mass
+#'
+#' @param mz_type Type of mass for targeted compound:
+#'                "pos", "neg" or "neutral"
+#' @param ion_mode Output mode wanted: "pos", "neg"
+#' @param mono_db A data.table with charges information
+#'                (see `Spec2Annot::db_monocharge`)
+#' @inheritParams gen_isotopes
+#'
+#' @return A data.table with ID, label and mz_query
+#' @export
+#' @import data.table magrittr
+#'
+#' @examples
+#' gen_monocharge(125.53658, "Isovalerine", "neutral", "neg")
+#' gen_monocharge(116.0837, "C6H12O2", "neutral", "neg")
+#' gen_monocharge(116.0837, "C6H12O2", "neutral", "pos")
+gen_monocharge <- function(
+  mz,
+  label = NULL,
+  mz_type = c("neutral", "pos", "neg")[[1]],
+  ion_mode = c("pos", "neg")[[1]],
+  mono_db = Spec2Annot::db_monocharge
+) {
+  if (
+    (!"data.table" %in% class(mono_db)) |
+      (!all(c("Formula", "charge", "lossL", "mz_query") %in% names(mono_db)))
+  ) {
+      stop(
+        "mono_db must be a data.table with Formula, charge and lossL columns"
+      )
+  }
+  if (!is.numeric(mz)) {
+    stop("mz must be numeric")
+  }
+
+  ## convert mz to neutral form
+  mz <- switch(mz_type,
+               pos = mz - 1.007276132,
+               neg = mz + 1.007276132,
+               neutral = mz,
+               stop("Check mz_type argument"))
+  ## Get monocharge list for selected polarity
+  temp_db <- copy(mono_db)
+  temp_db <- switch(ion_mode,
+                    pos = temp_db[charge == 1],
+                    neg = temp_db[charge == -1],
+                    stop("ion_mode argument must be 'pos' or 'neg'"))
+  ## Calculate m/Z from formula and add mz
+  temp_db[, ID := 1:.N]
+  ## Add charge
+  temp_db[
+    ,
+    Formula_calc := ifelse(
+      charge == 1,
+      paste0(Formula, "-", abs(charge)),
+      ifelse(
+        charge == -1,
+        paste0(Formula, "+", abs(charge)),
+        Formula
+      )
+    )
+  ]
+  temp_db[, mz_query := mz + mz_query, by = ID]
+  ## Add label
+  if (is.null(label)) {label <- "X"}
+  ## Output
+  temp_db[
+    ,
+    label := paste0(
+      "[", label, Formula, "]",
+      ifelse(
+        charge < 0,
+        "-",
+        ifelse(
+          charge > 0,
+          "+",
+          ""
+        )
+      )
+    )
+  ]
+  temp_db[, .(ID, label, lossL, mz_query)]
+}
+
+#' Generate adduct list from mz
+#'
+#' @param adduct_db A data.table with adduct informations
+#'                  see (`Spec2Annot::Adduct_db`).
+#' @inheritParams gen_isotopes
+#' @inheritParams gen_monocharge
+#'
+#' @return
+#' A data.table with adducts mass and labels.
+#'
+#' @export
+#'
+#' @examples
+#' gen_adduct(125.53658, "Isovalerine", "neutral")
+#' gen_adduct(116.0837, "C6H12O2", "neutral")
+#' gen_adduct(116.0837, "C6H12O2", "pos")
+gen_adduct <- function(
+  mz,
+  label = NULL,
+  mz_type = c("neutral", "pos", "neg")[[1]],
+  adduct_db = Spec2Annot::Adduct_db) {
+  if (
+    (!"data.table" %in% class(adduct_db)) |
+      (!all(c("adduct", "charge", "mz_query") %in% names(adduct_db)))
+  ) {
+    stop("adduct_db must be a data.table with Formula, charge and lossL columns")
+  }
+  
+  if (!is.numeric(mz)) {
+    stop("mz must be numeric")
+  }
+  ## convert mz to neutral form
+  mz <- switch(mz_type,
+               pos = mz - 1.007276132,
+               neg = mz + 1.007276132,
+               neutral = mz,
+               stop("Check mz_type argument"))
+  temp_db <- copy(adduct_db)
+  ## Calculate m/Z from formula and add mz
+  temp_db[, ID := 1:.N]
+  ## Add charge
+  temp_db[, mz_query := mz + mz_query]
+  ## Add label
+  if (is.null(label)) {
+    label <- "X"
+  }
+  ## Output
+  temp_db[, label := paste0("[", label, adduct, "]")]
+  temp_db[charge < 0, label := paste0(label, "-")]
+  temp_db[charge > 0, label := paste0(label, "+")]
+  temp_db[, .(ID, label, mz_query)]
+}
+
+#' Generate losses list from mz
+#'
+#' @param loss_db A data.table with losses information
+#'                see `Spec2Annot::Losses_db`
+#' @inheritParams gen_isotopes
+#' @inheritParams gen_monocharge
+#'
+#' @return
+#' A data.table with losses mass and labels.
+#'
+#' @export
+#'
+#' @examples
+#' gen_losses(125.53658, "Isovalerine", "neutral")
+#' gen_losses(116.0837, "C6H12O2", "neutral")
+#' gen_losses(116.0837, "C6H12O2", "pos")
+gen_losses <- function(
+  mz,
+  label = NULL,
+  mz_type = c("neutral", "pos", "neg")[[1]],
+  loss_db = Spec2Annot::Losses_db
+) {
+  if (
+    (!"data.table" %in% class(loss_db)) |
+      (!all(c("loss", "mz_query") %in% names(loss_db)))
+  ) {
+    stop("loss_db must be a data.table with Formula, charge and lossL columns")
+  }
+
+  if (!is.numeric(mz)) {
+    stop("mz must be numeric")
+  }
+  ## convert mz to neutral form
+  mz <- switch(mz_type,
+               pos = mz - 1.007276132,
+               neg = mz + 1.007276132,
+               neutral = mz,
+               stop("Check mz_type argument"))
+  ## Calculate m/Z from formula and add mz
+  temp_db <- copy(loss_db)
+  temp_db[, ID := 1:.N]
+  ## Add charge
+  temp_db[, mz_query := mz + mz_query]
+  ## Remove losse < 0
+  temp_db <- temp_db[mz_query > 0]
+  ## Add label
+  if (is.null(label)) {
+    label <- "X"
+  }
+  ## Output
+  temp_db[, label := paste0("[", label, loss, "]")]
+  temp_db[, .(ID, label, mz_query)]
+}
