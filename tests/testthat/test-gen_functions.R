@@ -22,6 +22,19 @@ test_that("gen_monocharge()", {
     c(100, 150, 250.1235, 10.1235),
     c("C6H2O3", "XXX", "Isomlqkf", "fdecd-lkj")
   )
+  
+  testthat::expect_error(gen_monocharge(100, "XX", "pos", "pos", "c"))
+  testthat::expect_error(gen_monocharge(100, "XX", "qsdf"))
+  testthat::expect_error(gen_monocharge(100, "XX", "pos", "mlkjqs"))
+  testthat::expect_error(gen_monocharge("mlk"))
+  testthat::expect_true(
+    all(
+      grepl(
+        "X",
+        gen_monocharge(100, NULL, "pos", "pos")$label
+      )
+    )
+  )
 })
 
 test_that("gen_adduct()", {
@@ -35,6 +48,16 @@ test_that("gen_adduct()", {
     c(100, 150, 250.1235, 10.1235),
     c("C6H2O3", "XXX", "Isomlqkf", "fdecd-lkj")
   )
+  testthat::expect_error(gen_adduct(125, adduct_db = "c"))
+  testthat::expect_error(gen_adduct("x"))
+  testthat::expect_true(
+    all(
+      grepl(
+        "X",
+        gen_adduct(100, NULL)$label
+      )
+    )
+  )
 })
 
 test_that("gen_losses()", {
@@ -47,5 +70,15 @@ test_that("gen_losses()", {
     },
     c(100, 150, 250.1235, 10.1235),
     c("C6H2O3", "XXX", "Isomlqkf", "fdecd-lkj")
+  )
+  testthat::expect_error(gen_losses("c"))
+  testthat::expect_error(gen_losses(100, loss_db = "c"))
+  testthat::expect_true(
+    all(
+      grepl(
+        "X",
+        gen_losses(100, NULL)$label
+      )
+    )
   )
 })
