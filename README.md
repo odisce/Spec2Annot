@@ -31,7 +31,7 @@ devtools::install_github("odisce/Spec2Annot")
  - a pre-computed list combining the above: `Spec2Annot::ions_database`  
  - atomic elements: `Spec2Annot::Element`  
 
-Those table are used to search as chemical-knowledge to annotate ions, but the package 
+Those tables are used to search as chemical-knowledge to annotate ions, but the package 
 contains a set of functions to calculate mass from strings, like:  
   - Chemical formula: `Spec2Annot::mz_from_string("C6H12O3")`  
   - Chemical loss or adducts: `Spec2Annot::mz_from_string("C6H12O3-H2O+H")`  

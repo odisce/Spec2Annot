@@ -36,7 +36,7 @@ testthat::test_that("annotat_mz()", {
 
 testthat::test_that("annotat_mz(): no annot found", {
   spec_res <- annotate_mz(
-    spectra_ms2[1:5,],
+    spectra_ms2[1:5, ],
     ppm = 3,
     polarity = 1,
     compo = "C10H12N5O6P1"

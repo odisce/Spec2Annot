@@ -14,6 +14,70 @@ test_that("Spec2Annot::get_iso_from_annot", {
   expect_false(Spec2Annot::get_iso_from_annot("SD_MLX"))
 })
 
+test_that("Spec2Annot::get_charge_from_compo", {
+  tp <- lapply(
+    c(
+      "C6H12_13C4_18O1",
+      "C6H12_13C2",
+      "C6H12O3",
+      "C6H3O3",
+      "C6H1O3+C6",
+      "-(C6H2O)-(H2O)",
+      "[C6H2O+H-H2O]"
+    ),
+    function(x) {
+      temp <- get_charge_from_compo(x)
+      # message(sprintf("compo: %s, charges: %i", x, temp))
+      expect_true(is.numeric(temp))
+      expect_true(temp == 0)
+    }
+  )
+
+  for (i in c("+", "++", "+++", "-", "--", "---")) {
+    tp <- lapply(
+      c(
+        "C6H12Z_13C4_18O1",
+        "C6H12Z_13C2",
+        "C6H12O3Z",
+        "C6H3O3Z",
+        "C6H1O3+C6Z",
+        "-(C6H2O)-(H2O)Z",
+        "[C6H2O+H-H2O]Z",
+        "[C6H2O+H-H2O]Z"
+      ),
+      function(input) {
+        
+        x <- gsub("Z", i, input)
+        # message(sprintf("compo: %s", x), appendLF = FALSE)
+        temp <- get_charge_from_compo(x)
+        # message(sprintf(", charges: %i", temp))
+        expect_true(is.numeric(temp))
+        expect_true(abs(temp) == nchar(i))
+        if (grepl("\\-", i)) {
+          expect_true(temp < 0)
+        } else {
+          expect_true(temp > 0)
+        }
+      }
+    )
+  }
+
+  lapply(
+    c(
+      "C6H12_13C4_18O1+++",
+      "[C6H12-H2O]_13C4_18O1+++",
+      "C6H12_13C2---",
+      "C6H++12--O3"
+    ),
+    function(x) {
+      temp <- get_charge_from_compo(x)
+      expect_true(is.numeric(temp))
+      expect_true(temp == 0)
+    }
+  )
+
+})
+
 test_that("Spec2Annot::mz_calc_ion", {
   expect_true(
     Spec2Annot::mz_calc_ion(351.2564, form = "-H") %between%
@@ -69,6 +133,12 @@ test_that("Spec2Annot::element_from_formula", {
 
 test_that("Spec2Annot::mz_from_string", {
   require(data.table)
+  expect_true(
+    sprintf(
+      "%0.6f",
+      Spec2Annot::mz_from_string("-H-")
+    ) == -1.007276
+  )
   expect_true(
     sprintf(
       "%0.10f",

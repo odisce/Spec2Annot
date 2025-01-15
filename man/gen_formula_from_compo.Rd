@@ -23,4 +23,6 @@ gen_formula_from_compo("-(C6H2O)-(H2O)")
 gen_formula_from_compo("-C6H2O-H2O+Ca2-")
 gen_formula_from_compo("[C6H12O2+H-H2O]+_13C")
 gen_formula_from_compo("[2(C6H2O3)+NH4]+_13C3")
+gen_formula_from_compo("[C6H12O2+H-H2O]++")
+gen_formula_from_compo("[C6H12O2+H-H2O]--_13C1")
 }

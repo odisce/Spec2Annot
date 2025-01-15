@@ -1,3 +1,17 @@
+#' Cross join of two data.table
+#'
+#' @param DT1 A data.table
+#' @param DT2 A data.table
+#' @import data.table
+#' @return
+#' A data.table corresponding to the cross join of the two tables.
+#' @export
+#' @examples
+#' CJ1(data.table(A = 1:10, B = "A"), data.table(C = 50:100, D = rep(c("C", "D", "E", "F"), length.out = 51)))
+CJ1 <- function(DT1, DT2){
+  DT1[ , c(.SD, DT2), by = seq_len(nrow(DT1))]
+}
+
 #' Get isotopes from annotation
 #'
 #' @param annotation Annotation in the form of `[M+H]+_13C1`
@@ -378,9 +392,54 @@ element_from_formula <- function(formula) {
   return(temp[])
 }
 
-#' Generate formula from composition
+#' Get charge from composition
 #'
 #' @param compo Elemental composition as a string (ex.: "C6H12O3NH2")
+#'
+#' @return Return the number of positive or negative charge
+#'
+#' @export
+#' @import magrittr
+#'
+#' @examples
+#' get_charge_from_compo("C6H2O3NH4")
+#' get_charge_from_compo("C6H2O3NH4+")
+#' get_charge_from_compo("C6H2O3NH4++")
+#' get_charge_from_compo("C6H2O3NH4-")
+#' get_charge_from_compo("C6H2O3NH4---")
+#' get_charge_from_compo("[C6H12O2+H-H2O]+_13C")
+#' get_charge_from_compo("[2(C6H2O3)+NH4]++_13C3")
+#' get_charge_from_compo("[2(C6H2O3)-NH4]--_13C3_15N1")
+get_charge_from_compo <- function(compo) {
+  if (grepl(".*(\\+|\\-)_?.*$", compo)) {
+    ## compo end with a sign meaning charge presence
+    ## count charges
+    ## remove isotopes
+    compo <- strsplit(compo, "_")[[1]][[1]]
+    charge_str <- gsub(".*?([\\+\\-]+)$", "\\1", compo)
+    if (charge_str == compo) {
+      ## no charge
+      return(as.integer(0))
+    }
+    charge_nb <- nchar(charge_str)
+    charge_nb <- ifelse(
+      grepl("\\+", charge_str),
+      charge_nb,
+      ifelse(
+        grepl("\\-", charge_str),
+        charge_nb * -1,
+        stop("Error when searching for charges")
+      )
+    )
+    return(as.integer(charge_nb))
+  } else {
+    return(as.integer(0))
+  }
+}
+
+#' Generate formula from composition
+#'
+#' @inheritParams get_charge_from_compo
 #'
 #' @return Return a string with an arithmetic formula
 #' used to calculate the final mass. This function can
@@ -395,6 +454,8 @@ element_from_formula <- function(formula) {
 #' gen_formula_from_compo("-C6H2O-H2O+Ca2-")
 #' gen_formula_from_compo("[C6H12O2+H-H2O]+_13C")
 #' gen_formula_from_compo("[2(C6H2O3)+NH4]+_13C3")
+#' gen_formula_from_compo("[C6H12O2+H-H2O]++")
+#' gen_formula_from_compo("[C6H12O2+H-H2O]--_13C1")
 gen_formula_from_compo <- function(compo) {
   ## Add isotopes
   ### Search for isotopes
@@ -408,7 +469,16 @@ gen_formula_from_compo <- function(compo) {
         .[1]
       }
   }
-
+  ## Get charge
+  charge_n <- get_charge_from_compo(compo)
+  ## If multiple charge, simplify to one sign
+  if (abs(charge_n) > 1) {
+    compo <- substring(
+      compo,
+      1,
+      (nchar(compo) - (abs(charge_n) - 1))
+    )
+  }
   ## Searh multimeres
   output <- gsub("\u2022", "", compo) %>% ## Remove radical character
     gsub("\\[", "(", .) %>% ## replace brackets by parenthesis
@@ -454,15 +524,19 @@ gen_formula_from_compo <- function(compo) {
 #'
 #' @examples
 #' mz_from_string("C6H5O3+")
+#' mz_from_string("C6H5O3++")
 #' mz_from_string("[C6H4O3+H]+_13C1")
 #' mz_from_string("[C6H4O3+H]+_13C2")
 mz_from_string <- function(string) {
-  ## Format string for calcul
-  temp <- gen_formula_from_compo(string)
   ## Get all unique element and their mz
-  elem <- element_from_formula(temp)
+  elem <- element_from_formula(string)
   ## Calculate final m/z
   output <- elem[, mass * as.numeric(elmt_nb)] %>% sum()
+  ## Divide by charge
+  charge_n <- abs(get_charge_from_compo(string))
+  if (charge_n > 1) {
+    output <- output / charge_n
+  }
   return(output)
 }
 
@@ -528,7 +602,7 @@ mz_range <- function(mass, ppm) {
 #' gen_isotopes(125.53658, "Isovalerine")
 gen_isotopes <- function(mz, label = NULL, db_iso = Spec2Annot::Isotopes_db) {
   temp_db <- copy(db_iso)
-  temp_db[, ID := 1:.N]
+  temp_db[, ID := seq_len(.N)]
   if (is.null(label)) {
     label <- "X"
   }
@@ -564,31 +638,35 @@ gen_monocharge <- function(
   mono_db = Spec2Annot::db_monocharge
 ) {
   if (
-    (!"data.table" %in% class(mono_db)) |
+    (!"data.table" %in% class(mono_db)) ||
       (!all(c("Formula", "charge", "lossL", "mz_query") %in% names(mono_db)))
   ) {
-      stop(
-        "mono_db must be a data.table with Formula, charge and lossL columns"
-      )
+    stop(
+      "mono_db must be a data.table with Formula, charge and lossL columns"
+    )
   }
   if (!is.numeric(mz)) {
     stop("mz must be numeric")
   }
 
   ## convert mz to neutral form
-  mz <- switch(mz_type,
-               pos = mz - 1.007276132,
-               neg = mz + 1.007276132,
-               neutral = mz,
-               stop("Check mz_type argument"))
+  mz <- switch(
+    mz_type,
+    pos = mz - 1.007276132,
+    neg = mz + 1.007276132,
+    neutral = mz,
+    stop("Check mz_type argument")
+  )
   ## Get monocharge list for selected polarity
   temp_db <- copy(mono_db)
-  temp_db <- switch(ion_mode,
-                    pos = temp_db[charge == 1],
-                    neg = temp_db[charge == -1],
-                    stop("ion_mode argument must be 'pos' or 'neg'"))
+  temp_db <- switch(
+    ion_mode,
+    pos = temp_db[charge == 1],
+    neg = temp_db[charge == -1],
+    stop("ion_mode argument must be 'pos' or 'neg'")
+  )
   ## Calculate m/Z from formula and add mz
-  temp_db[, ID := 1:.N]
+  temp_db[, ID := seq_len(.N)]
   ## Add charge
   temp_db[
     ,
@@ -649,9 +727,10 @@ gen_adduct <- function(
     (!"data.table" %in% class(adduct_db)) |
       (!all(c("adduct", "charge", "mz_query") %in% names(adduct_db)))
   ) {
-    stop("adduct_db must be a data.table with Formula, charge and lossL columns")
+    stop(
+      "adduct_db must be a data.table with adduct, charge and mz_query columns"
+    )
   }
-  
   if (!is.numeric(mz)) {
     stop("mz must be numeric")
   }
@@ -663,7 +742,7 @@ gen_adduct <- function(
                stop("Check mz_type argument"))
   temp_db <- copy(adduct_db)
   ## Calculate m/Z from formula and add mz
-  temp_db[, ID := 1:.N]
+  temp_db[, ID := seq_len(.N)]
   ## Add charge
   temp_db[, mz_query := mz + mz_query]
   ## Add label
@@ -700,7 +779,7 @@ gen_losses <- function(
   loss_db = Spec2Annot::Losses_db
 ) {
   if (
-    (!"data.table" %in% class(loss_db)) |
+    (!"data.table" %in% class(loss_db)) ||
       (!all(c("loss", "mz_query") %in% names(loss_db)))
   ) {
     stop("loss_db must be a data.table with Formula, charge and lossL columns")
@@ -710,14 +789,16 @@ gen_losses <- function(
     stop("mz must be numeric")
   }
   ## convert mz to neutral form
-  mz <- switch(mz_type,
-               pos = mz - 1.007276132,
-               neg = mz + 1.007276132,
-               neutral = mz,
-               stop("Check mz_type argument"))
+  mz <- switch(
+    mz_type,
+    pos = mz - 1.007276132,
+    neg = mz + 1.007276132,
+    neutral = mz,
+    stop("Check mz_type argument")
+  )
   ## Calculate m/Z from formula and add mz
   temp_db <- copy(loss_db)
-  temp_db[, ID := 1:.N]
+  temp_db[, ID := seq_len(.N)]
   ## Add charge
   temp_db[, mz_query := mz + mz_query]
   ## Remove losse < 0

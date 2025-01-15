@@ -1,6 +1,6 @@
 Package: Spec2Annot
 Title: Annotation of Mass Spectra
-Version: 1.0
+Version: 1.1
 Authors@R: 
     c(
       person(given = "Sylvain", family = "Dechaumet", email = "sylvain.dechaumet@cea.fr", role = c("aut", "cre")),

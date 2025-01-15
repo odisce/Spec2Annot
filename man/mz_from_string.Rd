@@ -18,6 +18,7 @@ Calculate mz from a string with signs
 }
 \examples{
 mz_from_string("C6H5O3+")
+mz_from_string("C6H5O3++")
 mz_from_string("[C6H4O3+H]+_13C1")
 mz_from_string("[C6H4O3+H]+_13C2")
 }
