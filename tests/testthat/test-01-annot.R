@@ -275,3 +275,20 @@ test_that("Spec2Annot::mz_range", {
   expect_true(length(temp) == 2)
   Spec2Annot::mz_ppm(temp[1], temp[2]) %between% (10 + c(-0.0001, 0.0001))
 })
+
+test_that("Spec2Annot::get_charge_from_compo", {
+  tp <- mapply(
+    function(x, y) {
+      temp <- Spec2Annot::get_charge_from_compo(x)
+      expect_true(temp == y)
+    },
+    c(
+      "C6H2O3+++",
+      "[M+H2+Na]+",
+      "[M+H2+2(Na)]++",
+      "[M+H2+2(HCOO)]--",
+      "C6H12O3-"
+    ),
+    c(3, 1, 2, -2, -1)
+  )
+})

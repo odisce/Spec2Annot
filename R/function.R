@@ -564,22 +564,6 @@ mz_calc_ion <- function(mass, form = "-H") {
   }
 }
 
-#' Calculate mass range using a ppm deviation
-#'
-#' @param mass mass to use as center value
-#' @param ppm ppm deviation to get the mass range
-#'
-#' @return
-#' A numeric vector with the mass range corresponding to mass +- ppm/2.
-#' The range difference is equal to the asked ppm
-#'
-#' @export
-#'
-#' @examples
-#' mz_range(142.5236, 5)
-mz_range <- function(mass, ppm) {
-  mass + (ppm * mass / 10^6 / 2) * c(-1, 1)
-}
 
 #' Function to generate isotopes from an exact mass
 #'

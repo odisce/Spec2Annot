@@ -11,20 +11,25 @@ test_that("Spec2Annot::mz_vec_aggregate", {
       replace = TRUE
     )
   }
-  merged_spec <- Spec2Annot::mz_vec_aggregate(
-    sort(
-      c(
-        spectra_full$mz,
-        sort(spectrab)
-      )
+  temp <- lapply(
+    list(
+      "sorted" = sort(c(spectra_full$mz, spectrab)),
+      "random" = c(spectra_full$mz, sort(spectrab)) %>% {sample(., size = length(.))}
     ),
-    0.015
+    function(x) {
+      merged_spec <- Spec2Annot::mz_vec_aggregate(
+        x,
+        0.015
+      )
+      expect_true(is.numeric(merged_spec))
+      expect_true(is.vector(merged_spec))
+      expect_true(
+        length(merged_spec) ==
+          length(spectrab) + length(spectra_full$mz)
+      )
+      expect_true(length(unique(merged_spec)) < length(spectrab))
+      return(merged_spec)
+    }
   )
-  expect_true(is.numeric(merged_spec))
-  expect_true(is.vector(merged_spec))
-  expect_true(
-    length(merged_spec) ==
-      length(spectrab) + length(spectra_full$mz)
-  )
-  expect_true(length(unique(merged_spec)) < length(spectrab))
+  expect_true(all(temp[[1]] == temp[[2]]))
 })

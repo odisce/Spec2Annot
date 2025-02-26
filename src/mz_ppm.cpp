@@ -21,3 +21,19 @@ double mz_ppm(
   double mass_error = max(in_data) - min(in_data);
   return (double)((mass_error / mean(in_data)) * 1e6);
 }
+
+//' Get mass range with ppm
+//'
+//' @param mass First mass
+//' @param ppm ppm tolerance
+//' @export
+//'
+// [[Rcpp::export]]
+Rcpp::NumericVector mz_range(
+  double mass = 120.1253,
+  double ppm = 10
+) {  
+  double mzdiff = (ppm * mass / 1e6 / 2);
+  Rcpp::NumericVector output = {mass - mzdiff, mass + mzdiff};
+  return output;
+}

@@ -50,6 +50,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// combn_cpp
+NumericMatrix combn_cpp(NumericVector m, int r);
+RcppExport SEXP _Spec2Annot_combn_cpp(SEXP mSEXP, SEXP rSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type m(mSEXP);
+    Rcpp::traits::input_parameter< int >::type r(rSEXP);
+    rcpp_result_gen = Rcpp::wrap(combn_cpp(m, r));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mz_vec_aggregate
 Rcpp::NumericVector mz_vec_aggregate(Rcpp::NumericVector xx, double tt);
 RcppExport SEXP _Spec2Annot_mz_vec_aggregate(SEXP xxSEXP, SEXP ttSEXP) {
@@ -74,13 +86,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mz_range
+Rcpp::NumericVector mz_range(double mass, double ppm);
+RcppExport SEXP _Spec2Annot_mz_range(SEXP massSEXP, SEXP ppmSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type mass(massSEXP);
+    Rcpp::traits::input_parameter< double >::type ppm(ppmSEXP);
+    rcpp_result_gen = Rcpp::wrap(mz_range(mass, ppm));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_Spec2Annot_brute_force_const", (DL_FUNC) &_Spec2Annot_brute_force_const, 7},
     {"_Spec2Annot_find_comb", (DL_FUNC) &_Spec2Annot_find_comb, 2},
     {"_Spec2Annot_annotate_spectra", (DL_FUNC) &_Spec2Annot_annotate_spectra, 1},
+    {"_Spec2Annot_combn_cpp", (DL_FUNC) &_Spec2Annot_combn_cpp, 2},
     {"_Spec2Annot_mz_vec_aggregate", (DL_FUNC) &_Spec2Annot_mz_vec_aggregate, 2},
     {"_Spec2Annot_mz_ppm", (DL_FUNC) &_Spec2Annot_mz_ppm, 2},
+    {"_Spec2Annot_mz_range", (DL_FUNC) &_Spec2Annot_mz_range, 2},
     {NULL, NULL, 0}
 };
 

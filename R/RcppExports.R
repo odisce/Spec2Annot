@@ -44,6 +44,10 @@ annotate_spectra <- function(mass) {
     .Call(`_Spec2Annot_annotate_spectra`, mass)
 }
 
+combn_cpp <- function(m, r) {
+    .Call(`_Spec2Annot_combn_cpp`, m, r)
+}
+
 #' Group m/Z from a vector based on tolerance
 #'
 #' This function returns a matrix with m/Z groups
@@ -69,5 +73,15 @@ mz_vec_aggregate <- function(xx, tt) {
 #'
 mz_ppm <- function(massa = 120.1253, massb = 120.1263) {
     .Call(`_Spec2Annot_mz_ppm`, massa, massb)
+}
+
+#' Get mass range with ppm
+#'
+#' @param mass First mass
+#' @param ppm ppm tolerance
+#' @export
+#'
+mz_range <- function(mass = 120.1253, ppm = 10) {
+    .Call(`_Spec2Annot_mz_range`, mass, ppm)
 }
 
