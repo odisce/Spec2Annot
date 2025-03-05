@@ -80,7 +80,7 @@ search_db <- function(db_dt, exp_dt, ppmtol = 5, rttol = 5) {
 search_db_cpp <- function(in_db, in_exp, ppmtol = 5, rttol = 5) {
   db_dt <- copy(in_db)
   exp_dt <- copy(in_exp)
-  dt_n <- sapply(list(db_dt, exp_dt), names)
+  dt_n <- lapply(list(db_dt, exp_dt), names)
   if (!is.null(ppmtol) && !all(sapply(dt_n, function(x) {"mz" %in% x}))) {
     stop("missing mz column in A and/or B")
   }
