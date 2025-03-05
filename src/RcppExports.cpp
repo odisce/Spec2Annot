@@ -74,6 +74,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_range
+std::vector<int> get_range(std::vector<double> input, double valA, double valB);
+RcppExport SEXP _Spec2Annot_get_range(SEXP inputSEXP, SEXP valASEXP, SEXP valBSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type input(inputSEXP);
+    Rcpp::traits::input_parameter< double >::type valA(valASEXP);
+    Rcpp::traits::input_parameter< double >::type valB(valBSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_range(input, valA, valB));
+    return rcpp_result_gen;
+END_RCPP
+}
+// match_tables
+Rcpp::DataFrame match_tables(DataFrame db_dt, DataFrame exp_dt, double ppmtol, double rttol, bool debugL);
+RcppExport SEXP _Spec2Annot_match_tables(SEXP db_dtSEXP, SEXP exp_dtSEXP, SEXP ppmtolSEXP, SEXP rttolSEXP, SEXP debugLSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type db_dt(db_dtSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type exp_dt(exp_dtSEXP);
+    Rcpp::traits::input_parameter< double >::type ppmtol(ppmtolSEXP);
+    Rcpp::traits::input_parameter< double >::type rttol(rttolSEXP);
+    Rcpp::traits::input_parameter< bool >::type debugL(debugLSEXP);
+    rcpp_result_gen = Rcpp::wrap(match_tables(db_dt, exp_dt, ppmtol, rttol, debugL));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mz_ppm
 double mz_ppm(double massa, double massb);
 RcppExport SEXP _Spec2Annot_mz_ppm(SEXP massaSEXP, SEXP massbSEXP) {
@@ -105,6 +133,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Spec2Annot_annotate_spectra", (DL_FUNC) &_Spec2Annot_annotate_spectra, 1},
     {"_Spec2Annot_combn_cpp", (DL_FUNC) &_Spec2Annot_combn_cpp, 2},
     {"_Spec2Annot_mz_vec_aggregate", (DL_FUNC) &_Spec2Annot_mz_vec_aggregate, 2},
+    {"_Spec2Annot_get_range", (DL_FUNC) &_Spec2Annot_get_range, 3},
+    {"_Spec2Annot_match_tables", (DL_FUNC) &_Spec2Annot_match_tables, 5},
     {"_Spec2Annot_mz_ppm", (DL_FUNC) &_Spec2Annot_mz_ppm, 2},
     {"_Spec2Annot_mz_range", (DL_FUNC) &_Spec2Annot_mz_range, 2},
     {NULL, NULL, 0}

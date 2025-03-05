@@ -61,6 +61,30 @@ mz_vec_aggregate <- function(xx, tt) {
     .Call(`_Spec2Annot_mz_vec_aggregate`, xx, tt)
 }
 
+#' Get index in range
+#'
+#' @export
+#'
+get_range <- function(input, valA, valB) {
+    .Call(`_Spec2Annot_get_range`, input, valA, valB)
+}
+
+#' Match two table
+#'
+#' This function match two table, searching every
+#' entries in B which are contained in A mz +- ppmtol
+#' and A.rt +- rttol
+#'
+#' @param db_dt a data.frame with at least mz and rt values (ref table)
+#' @param exp_dt a data.frame with at least mz and rt values (exp table)
+#' @param ppmtol a numeric value for the ppm tolerance
+#' @param rttol a numeric value for the rt tolerance
+#' @export
+#'
+match_tables <- function(db_dt, exp_dt, ppmtol, rttol, debugL = FALSE) {
+    .Call(`_Spec2Annot_match_tables`, db_dt, exp_dt, ppmtol, rttol, debugL)
+}
+
 #' Get mass deviation in ppm
 #'
 #' This function returns a numeric value
