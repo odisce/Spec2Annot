@@ -46,11 +46,8 @@ test_that("Spec2Annot::get_charge_from_compo", {
         "[C6H2O+H-H2O]Z"
       ),
       function(input) {
-        
         x <- gsub("Z", i, input)
-        # message(sprintf("compo: %s", x), appendLF = FALSE)
         temp <- get_charge_from_compo(x)
-        # message(sprintf(", charges: %i", temp))
         expect_true(is.numeric(temp))
         expect_true(abs(temp) == nchar(i))
         if (grepl("\\-", i)) {
@@ -288,6 +285,23 @@ test_that("Spec2Annot::get_charge_from_compo", {
       "[M+H2+2(Na)]++",
       "[M+H2+2(HCOO)]--",
       "C6H12O3-"
+    ),
+    c(3, 1, 2, -2, -1)
+  )
+})
+
+test_that("Spec2Annot::get_charge_from_compo", {
+  tp <- mapply(
+    function(x, y) {
+      temp <- Spec2Annot::get_charge_from_compo(x)
+      expect_true(temp == y)
+    },
+    c(
+      "C6H2O3+3",
+      "[M+H2+Na]+1",
+      "[M+H2+2(Na)]+2",
+      "[M+H2+2(HCOO)]-2",
+      "C6H12O3-1"
     ),
     c(3, 1, 2, -2, -1)
   )

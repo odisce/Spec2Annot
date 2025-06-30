@@ -412,25 +412,28 @@ element_from_formula <- function(formula) {
 #' get_charge_from_compo("[2(C6H2O3)-NH4]--_13C3_15N1")
 get_charge_from_compo <- function(compo) {
   if (grepl(".*(\\+|\\-)_?.*$", compo)) {
-    ## compo end with a sign meaning charge presence
-    ## count charges
-    ## remove isotopes
     compo <- strsplit(compo, "_")[[1]][[1]]
-    charge_str <- gsub(".*?([\\+\\-]+)$", "\\1", compo)
+    charge_str <- gsub(".*?([\\+\\-]+[0-9]{0,})$", "\\1", compo)
     if (charge_str == compo) {
-      ## no charge
       return(as.integer(0))
     }
-    charge_nb <- nchar(charge_str)
-    charge_nb <- ifelse(
+    sign_c <- ifelse(
       grepl("\\+", charge_str),
-      charge_nb,
+      1,
       ifelse(
         grepl("\\-", charge_str),
-        charge_nb * -1,
+        -1,
         stop("Error when searching for charges")
       )
     )
+    ## Check if charge in nb
+    if (grepl("[0-9]{1,}", charge_str)) {
+      charge_int <- gsub("^[\\+|\\-]{1,}([0-9]{1,}).*$", "\\1", charge_str) %>%
+        as.numeric()
+      charge_nb <- charge_int * sign_c
+    } else {
+      charge_nb <- nchar(charge_str) * sign_c
+    }
     return(as.integer(charge_nb))
   } else {
     return(as.integer(0))

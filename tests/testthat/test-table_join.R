@@ -71,8 +71,8 @@ test_that(
           db_dt_i <- db_dt[sample(seq_len(.N), size = db_size, replace = TRUE), ]
           exp_dt_i <- exp_dt[sample(seq_len(.N)), ]
           output <- search_db_cpp(
-            in_db = db_dt_i,
-            in_exp = exp_dt_i,
+            in_db = db_dt_i[, .(exp_id = id, rt, mz)],
+            in_exp = exp_dt_i[, .(db_id = id, rt, mz)],
             ppmtol = ppmi,
             rttol = rttoli
           )

@@ -39,8 +39,9 @@ void sort_indices(std::vector<T> &data, std::vector<size_t> &indices){
 std::vector<size_t> sorted_index(Rcpp::NumericVector& indt) {
   std::vector<double> indt_v = as<std::vector<double> >(indt);
   std::vector<size_t> indt_v_index(indt_v.size());
-  for (size_t it = 0 ; it != indt_v_index.size() ; it++)
-  indt_v_index[it] = it;
+  for (size_t it = 0 ; it != indt_v_index.size() ; it++) {
+    indt_v_index[it] = it;
+  }
   sort_indices(indt_v, indt_v_index);
   return indt_v_index;
 }
