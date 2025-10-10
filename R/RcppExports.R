@@ -24,8 +24,8 @@ brute_force_const <- function(mass = 120, ppm = 5, mass_vc = 0L, maxiter_vc_ = N
 #' This function returns edges of networked
 #' ions
 #'
-#' @param n integer
-#' @param r 
+#' @param n number of pairs to create
+#' @param r number of element in each pairs
 #' @export
 #'
 find_comb <- function(n, r) {
@@ -37,7 +37,7 @@ find_comb <- function(n, r) {
 #' This function returns edges of networked
 #' ions
 #'
-#' @param spectra_m Spectra as a numeric matrix
+#' @param mass A numeric vector
 #' @export
 #'
 annotate_spectra <- function(mass) {
@@ -63,6 +63,9 @@ mz_vec_aggregate <- function(xx, tt) {
 
 #' Get index in range
 #'
+#' @param input a numeric vector
+#' @param valA a numeric value for the lower bound
+#' @param valB a numeric value for the higher bound
 #' @export
 #'
 get_range <- function(input, valA, valB) {
@@ -79,6 +82,7 @@ get_range <- function(input, valA, valB) {
 #' @param exp_dt a data.frame with at least mz and rt values (exp table)
 #' @param ppmtol a numeric value for the ppm tolerance
 #' @param rttol a numeric value for the rt tolerance
+#' @param debugL logical to print debug message
 #' @export
 #'
 match_tables <- function(db_dt, exp_dt, ppmtol, rttol, debugL = FALSE) {

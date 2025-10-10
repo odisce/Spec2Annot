@@ -4,6 +4,9 @@ using namespace Rcpp;
 
 //' Get index in range
 //'
+//' @param input a numeric vector
+//' @param valA a numeric value for the lower bound
+//' @param valB a numeric value for the higher bound
 //' @export
 //'
 // [[Rcpp::export]]
@@ -56,6 +59,7 @@ std::vector<size_t> sorted_index(Rcpp::NumericVector& indt) {
 //' @param exp_dt a data.frame with at least mz and rt values (exp table)
 //' @param ppmtol a numeric value for the ppm tolerance
 //' @param rttol a numeric value for the rt tolerance
+//' @param debugL logical to print debug message
 //' @export
 //'
 // [[Rcpp::export]]
@@ -93,45 +97,45 @@ Rcpp::DataFrame match_tables(DataFrame db_dt, DataFrame exp_dt, double ppmtol, d
     rtsel = smallRT[small_it];
     rtrange = {rtsel - rttol, rtsel + rttol};
     if (debugL) {
-      std::cout << "Getting ref: " << small_it;
-      std::cout << " rt: " << rtrange[0] << "-" << rtrange[1];
-      std::cout << " mz: " << mzrange[0] << "-" << mzrange[1] << std::endl; 
+      Rcpp::Rcout << "Getting ref: " << small_it;
+      Rcpp::Rcout << " rt: " << rtrange[0] << "-" << rtrange[1];
+      Rcpp::Rcout << " mz: " << mzrange[0] << "-" << mzrange[1] << std::endl; 
     }
     bool firstL = false;
     for (size_t big_it = prevstart ; big_it != bigDTmzindex.size() ; big_it++) {
       if (debugL) {
-        std::cout << "   exp it: " << big_it;
-        std::cout << " mz: " << bigMZ[bigDTmzindex[big_it]];
-        std::cout << " rt: " << bigRT[bigDTmzindex[big_it]];
+        Rcpp::Rcout << "   exp it: " << big_it;
+        Rcpp::Rcout << " mz: " << bigMZ[bigDTmzindex[big_it]];
+        Rcpp::Rcout << " rt: " << bigRT[bigDTmzindex[big_it]];
       }
       if (bigMZ[bigDTmzindex[big_it]] >= mzrange[0]) {
         if (!firstL) {
           prevstart = big_it;
           firstL = true;
           if (debugL) {
-            std::cout << " new start: " << prevstart;
+            Rcpp::Rcout << " new start: " << prevstart;
           }
         }
         if (debugL) {
-          std::cout << " >= mzmin ";
+          Rcpp::Rcout << " >= mzmin ";
         }
         if (bigMZ[bigDTmzindex[big_it]] > mzrange[1]) {
           if (debugL) {
-            std::cout << " > mzmax ";
-            std::cout << std::endl;
+            Rcpp::Rcout << " > mzmax ";
+            Rcpp::Rcout << std::endl;
           }
           break;
         } else {
           // Check if in rtime
           if (debugL) {
-            std::cout << " x < mzmax ";
+            Rcpp::Rcout << " x < mzmax ";
           }
           if (
             bigRT[bigDTmzindex[big_it]] >= rtrange[0] &&
               bigRT[bigDTmzindex[big_it]] <= rtrange[1]
           ) {
             if (debugL) {
-              std::cout << " in rtrange ";
+              Rcpp::Rcout << " in rtrange ";
             }
             matched_Small_index.push_back(small_it + 1); // +1 to convert to R indexing
             matched_Big_index.push_back(bigDTmzindex[big_it] + 1); // +1 to convert to R indexing
@@ -139,7 +143,7 @@ Rcpp::DataFrame match_tables(DataFrame db_dt, DataFrame exp_dt, double ppmtol, d
         }
       }
       if (debugL) {
-        std::cout << std::endl;
+        Rcpp::Rcout << std::endl;
       }
     }
   }

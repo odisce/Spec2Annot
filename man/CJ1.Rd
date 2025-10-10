@@ -18,5 +18,12 @@ A data.table corresponding to the cross join of the two tables.
 Cross join of two data.table
 }
 \examples{
-CJ1(data.table(A = 1:10, B = "A"), data.table(C = 50:100, D = rep(c("C", "D", "E", "F"), length.out = 51)))
+require(data.table)
+CJ1(
+ data.table(A = 1:10, B = "A"),
+ data.table(
+   C = 50:100,
+   D = rep(c("C", "D", "E", "F"), length.out = 51)
+ )
+)
 }

@@ -18,11 +18,32 @@ gen_ionlist(
 )
 }
 \arguments{
-\item{adducts}{}
+\item{neutral_mz}{Neutral Mass}
+
+\item{polarity}{Polarity}
+
+\item{iso}{Logical}
+
+\item{multi}{Multimers}
+
+\item{losses}{Logical}
+
+\item{adducts}{Logical}
+
+\item{mono_db}{Database}
+
+\item{loss_db}{Database}
+
+\item{adduct_db}{Database}
+
+\item{db_iso}{Database}
+}
+\value{
+a data.table
 }
 \description{
 Calculate list of targetd ions from neutral mz
 }
 \examples{
-gen_ionlist(153.5125, 1, T, 2, T, T)
+gen_ionlist(153.5125, 1, TRUE, 2, TRUE, TRUE)
 }

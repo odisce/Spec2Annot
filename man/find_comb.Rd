@@ -7,9 +7,9 @@
 find_comb(n, r)
 }
 \arguments{
-\item{n}{integer}
+\item{n}{number of pairs to create}
 
-\item{r}{}
+\item{r}{number of element in each pairs}
 }
 \description{
 This function returns edges of networked

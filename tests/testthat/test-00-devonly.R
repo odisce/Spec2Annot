@@ -2,9 +2,9 @@ testthat::skip("For development only")
 
 test_that("DEV_A", {
   ## annotate_mz
-  devtools::test()
-  devtools::document()
-  devtools::load_all()
+  # devtools::test()
+  # devtools::document()
+  # devtools::load_all()
   # renv::install(".", prompt = FALSE)
   # require(testthat)
   # covr::report()

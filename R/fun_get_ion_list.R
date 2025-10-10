@@ -129,13 +129,21 @@ fun_get_ion_list <- function(
     ifelse(is.na(loss_mass), "", paste0("+", loss_mass))
   ), by = ID]
 
-  return(data.table(add_list))
+  ## Calculate relative mass
+  add_list[,
+    relative_mass := gsub("M", 0, exact_mass) %>%
+      {eval(parse(text = .))},
+    by = .(ID)
+  ]
+
+  return(data.table(add_list[, .(Attribution, Formula, charge, lossL, Type, relative_mass, exact_mass)]))
 }
 
 #' Calculate the ions database
 #'
 #' @inheritParams fun_get_ion_list
-#' @inherit mz_calc_ion
+#' @inheritParams mz_calc_ion
+#' @inheritParams gen_isotopes
 #' @import data.table magrittr
 #'
 #' @return
@@ -148,7 +156,7 @@ fun_get_ion_list <- function(
 fun_generate_ions_from_mz <- function(
   mass = 252.2534,
   losses = Spec2Annot::Losses_db,
-  iso = Spec2Annot::Isotopes_db,
+  db_iso = Spec2Annot::Isotopes_db,
   charges = Spec2Annot::db_monocharge,
   adducts = Spec2Annot::Adduct_db,
   polarity = NULL
@@ -159,11 +167,7 @@ fun_generate_ions_from_mz <- function(
   }
   ##Calculate masses
   ions_full_list[, ID := seq_len(.N)]
-  ions_full_list[,
-    relative_mass := gsub("M", 0, exact_mass) %>%
-      {eval(parse(text = .))},
-    by = .(ID)
-  ]
+
   ions_full_list[, exact_mass := gsub("M", mass, exact_mass)]
   ions_full_list[,
     mz_query := exact_mass %>%
@@ -171,13 +175,13 @@ fun_generate_ions_from_mz <- function(
     by = .(ID)
   ]
   ions_full_list[, mz_query := as.numeric(mz_query)]
-  if (!(isFALSE(iso) || is.null(iso))) {
+  if (!(isFALSE(db_iso) || is.null(db_iso))) {
     isotopes_dt <- lapply(seq_len(nrow(ions_full_list)), function(x) {
       it_dt <- ions_full_list[x,]
       out <- gen_isotopes(
         mz = it_dt$mz_query,
         label = "X",
-        db_iso = Spec2Annot::Isotopes_db
+        db_iso = db_iso
       )
       ## Create custom label
       new_label <- paste0(it_dt$Attribution, "_", out$isotope)
@@ -187,6 +191,7 @@ fun_generate_ions_from_mz <- function(
       out[, lossL := FALSE]
       out[, isotope := NULL]
       out[, charge := it_dt$charge]
+      out[, relative_mass := mz_query - it_dt$mz_query]
       data.table(out)
     }) %>%
       rbindlist()

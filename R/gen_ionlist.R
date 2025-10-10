@@ -1,17 +1,21 @@
 #' Calculate list of targetd ions from neutral mz
 #'
-#' @param neutral_mz
-#' @param polarity
-#' @param iso
-#' @param multi
-#' @param losses
-#' @param adducts
+#' @param neutral_mz Neutral Mass
+#' @param polarity Polarity
+#' @param iso Logical
+#' @param multi Multimers
+#' @param losses Logical
+#' @param adducts Logical
+#' @param mono_db Database
+#' @param loss_db Database
+#' @param adduct_db Database
+#' @param db_iso Database
 #'
-#' @return
+#' @return a data.table
 #' @export
 #'
 #' @examples
-#' gen_ionlist(153.5125, 1, T, 2, T, T)
+#' gen_ionlist(153.5125, 1, TRUE, 2, TRUE, TRUE)
 gen_ionlist <- function(
   neutral_mz = 153.5125,
   polarity = c(0,1)[1],
@@ -92,7 +96,7 @@ gen_ionlist <- function(
     ion_list <- rbind(ion_list, add_dt)
   }
   ## Calculate isotopes
-  if (isTRUE(iso)) {
+  if (isTRUE(db_iso)) {
     isotopes_dt <- lapply(
       seq_len(ion_list[, .N]),
       function(x) {

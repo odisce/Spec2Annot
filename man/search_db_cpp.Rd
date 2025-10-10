@@ -7,13 +7,13 @@
 search_db_cpp(in_db, in_exp, ppmtol = 5, rttol = 5)
 }
 \arguments{
+\item{in_db}{a data.table with id, mz, rt columns}
+
 \item{in_exp}{a data.table with id, mz, rt columns}
 
 \item{ppmtol}{numeric value to set ppm search in m/Z dimension.}
 
 \item{rttol}{numeric value to set rt tolerance in rt dimension.}
-
-\item{db_dt}{a data.table with id, mz, rt columns}
 }
 \value{
 Return the exp_dt data.table entries matching the criteria with

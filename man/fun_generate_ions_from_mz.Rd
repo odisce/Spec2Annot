@@ -7,7 +7,7 @@
 fun_generate_ions_from_mz(
   mass = 252.2534,
   losses = Spec2Annot::Losses_db,
-  iso = Spec2Annot::Isotopes_db,
+  db_iso = Spec2Annot::Isotopes_db,
   charges = Spec2Annot::db_monocharge,
   adducts = Spec2Annot::Adduct_db,
   polarity = NULL
@@ -17,6 +17,9 @@ fun_generate_ions_from_mz(
 \item{mass}{numerical mass to use as base}
 
 \item{losses}{losses as data.table (see Spec2Annot::Losses_db) or NULL}
+
+\item{db_iso}{A data.table with isotopes informations
+(see \code{Spec2Annot::Isotopes_db} as example).}
 
 \item{charges}{charges as data.table (see Spec2Annot::db_monocharge)}
 

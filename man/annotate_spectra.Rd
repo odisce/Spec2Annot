@@ -7,7 +7,7 @@
 annotate_spectra(mass)
 }
 \arguments{
-\item{spectra_m}{Spectra as a numeric matrix}
+\item{mass}{A numeric vector}
 }
 \description{
 This function returns edges of networked

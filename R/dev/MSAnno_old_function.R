@@ -156,7 +156,13 @@ fun_get_atom_count <- function(string, output = c("data.table", "string")[[1]]) 
 #' @export
 #'
 #' @examples
-#' CJ1(data.table(A = 1:10, B = "A"), data.table(C = 50:100, D = rep(c("C", "D", "E", "F"), length.out = 51)))
+#' CJ1(
+#'  data.table(A = 1:10, B = "A"),
+#'  data.table(
+#'    C = 50:100,
+#'    D = rep(c("C", "D", "E", "F"), length.out = 51)
+#'  )
+#' )
 CJ1 <- function(DT1, DT2){
   DT1[ , c(.SD, DT2), by = seq_len(nrow(DT1))]
 }

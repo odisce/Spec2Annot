@@ -7,7 +7,14 @@
 #' A data.table corresponding to the cross join of the two tables.
 #' @export
 #' @examples
-#' CJ1(data.table(A = 1:10, B = "A"), data.table(C = 50:100, D = rep(c("C", "D", "E", "F"), length.out = 51)))
+#' require(data.table)
+#' CJ1(
+#'  data.table(A = 1:10, B = "A"),
+#'  data.table(
+#'    C = 50:100,
+#'    D = rep(c("C", "D", "E", "F"), length.out = 51)
+#'  )
+#' )
 CJ1 <- function(DT1, DT2){
   DT1[ , c(.SD, DT2), by = seq_len(nrow(DT1))]
 }

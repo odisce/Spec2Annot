@@ -6,6 +6,13 @@
 \usage{
 get_range(input, valA, valB)
 }
+\arguments{
+\item{input}{a numeric vector}
+
+\item{valA}{a numeric value for the lower bound}
+
+\item{valB}{a numeric value for the higher bound}
+}
 \description{
 Get index in range
 }

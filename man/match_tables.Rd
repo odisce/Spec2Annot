@@ -14,6 +14,8 @@ match_tables(db_dt, exp_dt, ppmtol, rttol, debugL = FALSE)
 \item{ppmtol}{a numeric value for the ppm tolerance}
 
 \item{rttol}{a numeric value for the rt tolerance}
+
+\item{debugL}{logical to print debug message}
 }
 \description{
 This function match two table, searching every
