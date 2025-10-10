@@ -43,6 +43,20 @@ Calculate mass:
   - ppm from range: `Spec2Annot::mz_ppm(120.2532, 120.2540)`  
   - ion from mass: `Spec2Annot::mz_calc_ion(120.2532, form = "-H")`  
 
+Very fast mZ/rt search between two tables: `Spec2Annot::search_db_cpp()` this function written in C++ use a combination 
+of sequential moving search range + a binary search algorithm implemented in std::lower/upper_bound.
+
+```{r}
+## Exemple on simulated exemple data, normally the function is used to search between two different tables.
+require(Spec2Annot)
+search_db_cpp(
+  in_db = spectra_full[, .(id = paste0("Database_", seq_len(.N)), mz, rt = rnorm(.N, 10, 10))],
+  in_exp = spectra_full[sample(seq_len(.N), .N, replace = TRUE), .(id = paste0("Experimental_", seq_len(.N)), mz, rt = rnorm(.N, 10, 10))],
+  ppmtol = 5,
+  rttol = 5
+)
+```
+
 
 ### Elemental composition finder
 

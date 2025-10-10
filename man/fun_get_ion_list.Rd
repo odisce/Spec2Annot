@@ -7,15 +7,19 @@
 fun_get_ion_list(
   losses = Spec2Annot::Losses_db,
   charges = Spec2Annot::db_monocharge,
-  adducts = Spec2Annot::Adduct_db
+  adducts = Spec2Annot::Adduct_db,
+  polarity = NULL
 )
 }
 \arguments{
-\item{losses}{losses as data.table (see Spec2Annot::Losses_db)}
+\item{losses}{losses as data.table (see Spec2Annot::Losses_db) or NULL}
 
 \item{charges}{charges as data.table (see Spec2Annot::db_monocharge)}
 
-\item{adducts}{adducts as data.table (see Spec2Annot::Adduct_db)}
+\item{adducts}{adducts as data.table (see Spec2Annot::Adduct_db) or NULL}
+
+\item{polarity}{Polarity to subset the forms (1 for positive, 0 for negative mode
+or NULL for both)}
 }
 \value{
 A data.table containing the full list of possible ions with the formula to calculate them
