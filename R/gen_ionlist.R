@@ -96,7 +96,7 @@ gen_ionlist <- function(
     ion_list <- rbind(ion_list, add_dt)
   }
   ## Calculate isotopes
-  if (isTRUE(db_iso)) {
+  if (isTRUE(iso)) {
     isotopes_dt <- lapply(
       seq_len(ion_list[, .N]),
       function(x) {
