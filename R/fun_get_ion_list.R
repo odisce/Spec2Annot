@@ -82,9 +82,11 @@ fun_get_ion_list <- function(
       warning("No charges elligible to calculate losses")
     } else {
       List_add_neut_loss <- CJ1(
-        charge_sub[, -c("Type")],
+        charge_sub[, -c("Type", "Attribution")],
         dt_losses[, .(loss, loss_mass = mz_query, Type = "Loss")]
       )
+      List_add_neut_loss[, Attribution := paste0("[(M", Formula, ")", loss, "]", ifelse(charge < 0, "-", "+"))]
+      List_add_neut_loss[, Attribution_mass := paste0("M+", charge_mass, "+", loss_mass)]
       ## Annotation using convention :
       ### [(ion)-neutral loss]-
       # List_add_neut_loss[, Attribution := paste0("[(M", ifelse(is.na(adduct), "", adduct), Formula, ")", loss, "]", ifelse(charge < 0, "-", "+"))]
@@ -121,22 +123,14 @@ fun_get_ion_list <- function(
   } else {
     return(NULL)
   }
-  
-  add_list[, exact_mass := paste0(
-    "M",
-    ifelse(is.na(adduct_mass), "", paste0("+", adduct_mass)),
-    ifelse(is.na(charge_mass), "", paste0("+", charge_mass)),
-    ifelse(is.na(loss_mass), "", paste0("+", loss_mass))
-  ), by = ID]
-
+  add_list[, exact_mass := Attribution_mass, by = ID]
   ## Calculate relative mass
   add_list[,
     relative_mass := gsub("M", 0, exact_mass) %>%
       {eval(parse(text = .))},
     by = .(ID)
   ]
-
-  return(data.table(add_list[, .(Attribution, Formula, charge, lossL, Type, relative_mass, exact_mass)]))
+  return(data.table(add_list[, .(Attribution, charge, lossL, Type, relative_mass, exact_mass)]))
 }
 
 #' Calculate the ions database
