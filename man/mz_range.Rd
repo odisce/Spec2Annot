@@ -9,7 +9,7 @@ mz_range(mass = 120.1253, ppm = 10)
 \arguments{
 \item{mass}{First mass}
 
-\item{ppm}{ppm tolerance}
+\item{ppm}{ppm tolerance mass +- ppm(mass)}
 }
 \description{
 Get mass range with ppm

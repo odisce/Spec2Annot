@@ -1,53 +1,53 @@
 
-test_that(
-  "DEV_A", {
-    require(magrittr)
-    require(data.table)
+require(magrittr)
+require(data.table)
 
-    exp_dt <- Spec2Annot::spectra_full
+test_that(
+  "search_db()", {
+    exp_dt <- spectra_full
     exp_dt[, id := ID]
     exp_dt[, rt := rep(1:10, length.out = .N)]
     db_dt <- exp_dt[c(1,1,2,3,4,5,6,7,8,9,10), ][, .(id = paste0('DB', seq_len(.N)), rt, mz)]
-    
-    output <- search_db(db_dt = db_dt, exp_dt = exp_dt)
-    testthat::expect_true('data.table' %in% class(output))
-    testthat::expect_true(output[, .N] >= 11)
-
-    output <- search_db(db_dt = db_dt, exp_dt = exp_dt, rttol = NULL, ppmtol = 100)
-    testthat::expect_true('data.table' %in% class(output))
-    testthat::expect_true(output[, .N] == 17)
-    testthat::expect_true(all(output[, range(mz)] == db_dt[, range(mz)]))
-
-    output <- search_db(db_dt = db_dt, exp_dt = exp_dt, rttol = 10, ppmtol = NULL)
-    testthat::expect_true('data.table' %in% class(output))
-    testthat::expect_true(output[, .N] == 27324)
-    testthat::expect_true(all(output[, range(rt)] == db_dt[, range(rt)]))
+    for (rttol in c(0, 1.5, 10)) {
+      for (mztol in c(0, 3, 10, 100)) {
+        output <- search_db(db_dt = db_dt, exp_dt = exp_dt, rttol = rttol, ppmtol = mztol)
+        testthat::expect_true('data.table' %in% class(output))
+        testthat::expect_true(all(output[, expid] %in% exp_dt[, ID]))
+        testthat::expect_true(all(output[, dbid] %in% db_dt[, id]))
+        testthat::expect_true(all(output[, range(mz)] %between% exp_dt[, range(mz)]))
+        output_complete <- merge(
+          output,
+          db_dt[, .(dbid = id, db_rt = rt, db_mz = mz)],
+          by = "dbid"
+        )
+        output_complete[, ppm := mz_ppm(mz, db_mz), by = .(mz, db_mz)]
+        output_complete[, rt_diff := abs(rt - db_rt), by = .(rt, db_rt)]
+        testthat::expect_true(all(output_complete[, ppm <= mztol]))
+        testthat::expect_true(all(output_complete[, rt_diff <= rttol]))
+      }
+    }
   }
 )
 
 test_that(
-  "Rcpp function match_tables()", {
-    require(magrittr)
-    require(data.table)
-
-    exp_dt <- Spec2Annot::spectra_full
+  "Rcpp function search_db_cpp()", {
+    exp_dt <- spectra_full
     exp_dt[, id := ID]
-    exp_dt[, rt := rep(1:10, length.out = .N) %>% as.numeric()]
+    exp_dt[, rt := rep(1:10, length.out = .N)]
     db_dt <- exp_dt[c(1,1,2,3,4,5,6,7,8,9,10), ][, .(id = paste0('DB', seq_len(.N)), rt, mz)]
-    
-    output <- search_db_cpp(db_dt, exp_dt, ppmtol = 10, rttol = 10)
-    testthat::expect_true('data.table' %in% class(output))
-    testthat::expect_true(output[, .N] >= 11)
-
-    output <- search_db(db_dt = db_dt, exp_dt = exp_dt, rttol = NULL, ppmtol = 100)
-    testthat::expect_true('data.table' %in% class(output))
-    testthat::expect_true(output[, .N] == 17)
-    testthat::expect_true(all(output[, range(mz)] == db_dt[, range(mz)]))
-
-    output <- search_db(db_dt = db_dt, exp_dt = exp_dt, rttol = 10, ppmtol = NULL)
-    testthat::expect_true('data.table' %in% class(output))
-    testthat::expect_true(output[, .N] == 27324)
-    testthat::expect_true(all(output[, range(rt)] == db_dt[, range(rt)]))
+    for (rttol in c(0, 1.5, 10)) {
+      for (mztol in c(0, 3, 10, 100)) {
+        output <- search_db_cpp(in_db = db_dt, in_exp = exp_dt, rttol = rttol, ppmtol = mztol)
+        testthat::expect_true('data.table' %in% class(output))
+        testthat::expect_true(all(output[, expid] %in% exp_dt[, ID]))
+        testthat::expect_true(all(output[, db_id] %in% db_dt[, id]))
+        testthat::expect_true(all(output[, range(exp_mz)] %between% exp_dt[, range(mz)]))
+        output[, ppm := mz_ppm(exp_mz, db_mz), by = .(exp_mz, db_mz)]
+        output[, rt_diff := abs(exp_rt - db_rt), by = .(db_rt, db_rt)]
+        testthat::expect_true(all(output[, ppm <= mztol]))
+        testthat::expect_true(all(output[, rt_diff <= rttol]))
+      }
+    }
   }
 )
 

@@ -106,7 +106,7 @@ mz_ppm <- function(massa = 120.1253, massb = 120.1263) {
 #' Get mass range with ppm
 #'
 #' @param mass First mass
-#' @param ppm ppm tolerance
+#' @param ppm ppm tolerance mass +- ppm(mass)
 #' @export
 #'
 mz_range <- function(mass = 120.1253, ppm = 10) {
