@@ -67,7 +67,7 @@ Rcpp::NumericVector annotate_spectra(
       while (*(--mt) == n-(last-mt)+1);
       (*mt)++;
       while (++mt != last) *mt = *(mt-1)+1;
-      diff_i = mass[*last-1] - mass[*first];
+      diff_i = mass[*(last-1)] - mass[*first];
       if (debugL) {
         Rcout << *(last-1) << ":" << *first << "=" << diff_i << "\n";
       }
