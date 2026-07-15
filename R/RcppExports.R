@@ -38,10 +38,11 @@ find_comb <- function(n, r) {
 #' ions
 #'
 #' @param mass A numeric vector
+#' @inheritParams match_tables
 #' @export
 #'
-annotate_spectra <- function(mass) {
-    .Call(`_Spec2Annot_annotate_spectra`, mass)
+annotate_spectra <- function(mass, debugL = FALSE) {
+    .Call(`_Spec2Annot_annotate_spectra`, mass, debugL)
 }
 
 combn_cpp <- function(m, r) {

@@ -46,11 +46,13 @@ int find_comb(int n, int r) {
 //' ions
 //'
 //' @param mass A numeric vector
+//' @inheritParams match_tables
 //' @export
 //'
 // [[Rcpp::export]]
 Rcpp::NumericVector annotate_spectra(
-  Rcpp::NumericVector mass
+  Rcpp::NumericVector mass,
+  bool debugL = false
 ) {
   // Iterate over every unique combination of two elements
   int n = mass.length()-1;
@@ -65,8 +67,10 @@ Rcpp::NumericVector annotate_spectra(
       while (*(--mt) == n-(last-mt)+1);
       (*mt)++;
       while (++mt != last) *mt = *(mt-1)+1;
-      diff_i = mass[*last] - mass[*first];
-      Rcout << *last << ":" << *first << "=" << diff_i << "\n";
+      diff_i = mass[*last-1] - mass[*first];
+      if (debugL) {
+        Rcout << *(last-1) << ":" << *first << "=" << diff_i << "\n";
+      }
       //Rcpp::Rcout << *last << ":" << *first;
   }
   return mass;

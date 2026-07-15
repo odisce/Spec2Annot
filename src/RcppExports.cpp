@@ -40,13 +40,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // annotate_spectra
-Rcpp::NumericVector annotate_spectra(Rcpp::NumericVector mass);
-RcppExport SEXP _Spec2Annot_annotate_spectra(SEXP massSEXP) {
+Rcpp::NumericVector annotate_spectra(Rcpp::NumericVector mass, bool debugL);
+RcppExport SEXP _Spec2Annot_annotate_spectra(SEXP massSEXP, SEXP debugLSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type mass(massSEXP);
-    rcpp_result_gen = Rcpp::wrap(annotate_spectra(mass));
+    Rcpp::traits::input_parameter< bool >::type debugL(debugLSEXP);
+    rcpp_result_gen = Rcpp::wrap(annotate_spectra(mass, debugL));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -130,7 +131,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_Spec2Annot_brute_force_const", (DL_FUNC) &_Spec2Annot_brute_force_const, 7},
     {"_Spec2Annot_find_comb", (DL_FUNC) &_Spec2Annot_find_comb, 2},
-    {"_Spec2Annot_annotate_spectra", (DL_FUNC) &_Spec2Annot_annotate_spectra, 1},
+    {"_Spec2Annot_annotate_spectra", (DL_FUNC) &_Spec2Annot_annotate_spectra, 2},
     {"_Spec2Annot_combn_cpp", (DL_FUNC) &_Spec2Annot_combn_cpp, 2},
     {"_Spec2Annot_mz_vec_aggregate", (DL_FUNC) &_Spec2Annot_mz_vec_aggregate, 2},
     {"_Spec2Annot_get_range", (DL_FUNC) &_Spec2Annot_get_range, 3},
