@@ -4,10 +4,12 @@
 \alias{annotate_spectra}
 \title{Annotate a matrix and return network edges}
 \usage{
-annotate_spectra(mass)
+annotate_spectra(mass, debugL = FALSE)
 }
 \arguments{
 \item{mass}{A numeric vector}
+
+\item{debugL}{logical to print debug message}
 }
 \description{
 This function returns edges of networked
