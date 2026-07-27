@@ -10,6 +10,13 @@
 
 This R package implement different way to annotate and query Mass spectra, using brute-force, isotopic or fragmentation pattern, prior informations on losses or adduct, etc...
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/odisce/Spec2Annot}
+}
+
+}
 \author{
 \strong{Maintainer}: Sylvain Dechaumet \email{sylvain.dechaumet@cea.fr}
 
