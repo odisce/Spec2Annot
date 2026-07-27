@@ -8,12 +8,13 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-This R package implement different way to annotate and query Mass spectra, using brute-force, isotopic or fragmentation pattern, prior informations on losses or adduct, etc...
+An R package for annotating and querying mass spectra using brute-force, isotopic, fragmentation patterns, and prior knowledge (e.g., losses or adducts).
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/odisce/Spec2Annot}
+  \item Report bugs at \url{https://github.com/odisce/Spec2Annot/issues}
 }
 
 }

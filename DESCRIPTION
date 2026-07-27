@@ -9,10 +9,10 @@ Authors@R:
       person(given = "Annelaure", family = "Damont", email = "annelaure.damont@cea.fr", role = c("ctb")),
       person(given = "Anaïs", family = "Legrand", email = "anais.legrand@cea.fr", role = c("ctb"))
     )
-Description: This R package implement different way to annotate and query Mass spectra, using brute-force, 
-             isotopic or fragmentation pattern, prior informations on losses or adduct, etc...
-License: CeCILL
+Description: An R package for annotating and querying mass spectra using brute-force, isotopic, fragmentation patterns, and prior knowledge (e.g., losses or adducts).
+License: CeCILL | file LICENSE
 URL: https://github.com/odisce/Spec2Annot
+BugReports: https://github.com/odisce/Spec2Annot/issues
 Depends:
     R (>= 4.0.0)
 Encoding: UTF-8
