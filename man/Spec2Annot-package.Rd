@@ -13,6 +13,11 @@ This R package implement different way to annotate and query Mass spectra, using
 \author{
 \strong{Maintainer}: Sylvain Dechaumet \email{sylvain.dechaumet@cea.fr}
 
+Authors:
+\itemize{
+  \item Sylvain Dechaumet \email{sylvain.dechaumet@cea.fr}
+}
+
 Other contributors:
 \itemize{
   \item Etienne Thevenot \email{etienne.thevenot@cea.fr} [contributor]

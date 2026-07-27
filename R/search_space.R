@@ -35,11 +35,13 @@ get_element_from_mass <- function(mass, use_golden_ratio = FALSE) {
       element_vec,
       function(x) {
         elmt_nb <- ceiling(
-          mass / Spec2Annot::Element[
-            grepl(paste0("^", x, "$"), atomic_symb),
-          ][
-            which.max(isotopic_compo), atomic_mass
-          ]
+          (
+            mass / Spec2Annot::Element[
+              grepl(paste0("^", x, "$"), atomic_symb),
+            ][
+              which.max(isotopic_compo), atomic_mass
+            ]
+          )
         )
         paste0(x, elmt_nb)
       }

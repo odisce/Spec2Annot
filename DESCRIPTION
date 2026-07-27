@@ -1,6 +1,6 @@
 Package: Spec2Annot
 Title: Annotation of Mass Spectra
-Version: 1.3.2
+Version: 1.3.3
 Authors@R: 
     c(
       person(given = "Sylvain", family = "Dechaumet", email = "sylvain.dechaumet@cea.fr", role = c("aut", "cre")),
@@ -11,21 +11,21 @@ Authors@R:
     )
 Description: This R package implement different way to annotate and query Mass spectra, using brute-force, 
              isotopic or fragmentation pattern, prior informations on losses or adduct, etc...
-License: file LICENSE
+License: CeCILL
+URL: https://github.com/odisce/Spec2Annot
 Depends:
     R (>= 4.0.0)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
 Imports: 
     data.table,
     magrittr,
     Rcpp,
     stringr
 Suggests: 
-    testthat (>= 3.0.0),
-    covr
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 LazyData: true
 LinkingTo: 
     Rcpp
+Config/roxygen2/version: 8.0.0
