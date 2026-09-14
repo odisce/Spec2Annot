@@ -3,9 +3,13 @@
 \docType{data}
 \name{spectra_ms2}
 \alias{spectra_ms2}
-\title{Spectra exemple}
+\title{Spectra example}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 29 rows and 2 columns.
+A \code{data.table} with a centroided MS2 spectra used as example
+\describe{
+\item{mz}{m/Z value}
+\item{i}{Measured intensity}
+}
 }
 \usage{
 spectra_ms2

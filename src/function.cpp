@@ -8,6 +8,7 @@ using namespace Rcpp;
 //'
 //' @param xx A numeric and sorted vector of m/Z
 //' @param tt Tolerance in absolute m/Z to group peaks
+//' @return A `numeric vector` with group indexes
 //' @export
 //'
 // [[Rcpp::export]]

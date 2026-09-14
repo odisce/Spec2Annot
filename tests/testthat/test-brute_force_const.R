@@ -11,11 +11,11 @@ test_that("brute_force_const()", {
   tp <- lapply(c(0,1,2,10), function(x) {
     temp <- brute_force_const(
       mass = mass,
-      ppm = 0.1,
+      ppm = x,
       mass_vc = mass_dt[elmt_nb > 0, ][order(-mass), mass],
       name_vc = mass_dt[elmt_nb > 0, ][order(-mass), element],
       maxiter_vc_ = mass_dt[elmt_nb > 0, ][order(-mass), elmt_nb],
-      debugl = x
+      debugl = FALSE
     )
     expect_true(nrow(temp) == 1)
     temp_form <- add_formula_to_annot(

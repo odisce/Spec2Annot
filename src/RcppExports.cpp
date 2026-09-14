@@ -27,18 +27,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// find_comb
-int find_comb(int n, int r);
-RcppExport SEXP _Spec2Annot_find_comb(SEXP nSEXP, SEXP rSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int >::type r(rSEXP);
-    rcpp_result_gen = Rcpp::wrap(find_comb(n, r));
-    return rcpp_result_gen;
-END_RCPP
-}
 // annotate_spectra
 Rcpp::NumericVector annotate_spectra(Rcpp::NumericVector mass, bool debugL);
 RcppExport SEXP _Spec2Annot_annotate_spectra(SEXP massSEXP, SEXP debugLSEXP) {
@@ -89,13 +77,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // match_tables
-Rcpp::DataFrame match_tables(DataFrame db_dt, DataFrame exp_dt, double ppmtol, double rttol, bool debugL);
+Rcpp::DataFrame match_tables(Rcpp::DataFrame db_dt, Rcpp::DataFrame exp_dt, double ppmtol, double rttol, bool debugL);
 RcppExport SEXP _Spec2Annot_match_tables(SEXP db_dtSEXP, SEXP exp_dtSEXP, SEXP ppmtolSEXP, SEXP rttolSEXP, SEXP debugLSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< DataFrame >::type db_dt(db_dtSEXP);
-    Rcpp::traits::input_parameter< DataFrame >::type exp_dt(exp_dtSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type db_dt(db_dtSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type exp_dt(exp_dtSEXP);
     Rcpp::traits::input_parameter< double >::type ppmtol(ppmtolSEXP);
     Rcpp::traits::input_parameter< double >::type rttol(rttolSEXP);
     Rcpp::traits::input_parameter< bool >::type debugL(debugLSEXP);
@@ -130,7 +118,6 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_Spec2Annot_brute_force_const", (DL_FUNC) &_Spec2Annot_brute_force_const, 7},
-    {"_Spec2Annot_find_comb", (DL_FUNC) &_Spec2Annot_find_comb, 2},
     {"_Spec2Annot_annotate_spectra", (DL_FUNC) &_Spec2Annot_annotate_spectra, 2},
     {"_Spec2Annot_combn_cpp", (DL_FUNC) &_Spec2Annot_combn_cpp, 2},
     {"_Spec2Annot_mz_vec_aggregate", (DL_FUNC) &_Spec2Annot_mz_vec_aggregate, 2},

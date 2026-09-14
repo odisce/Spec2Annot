@@ -3,14 +3,19 @@
 \docType{data}
 \name{spectra_full}
 \alias{spectra_full}
-\title{Spectra exemple}
+\title{Spectra example}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 2484 rows and 3 columns.
+A \code{data.table} with a centroided MS spectra used as example
+\describe{
+\item{mz}{m/Z value}
+\item{intensity}{Measured intensity}
+\item{ID}{Unique identifier}
+}
 }
 \usage{
 spectra_full
 }
 \description{
-Spectra exemple
+Spectra example
 }
 \keyword{datasets}

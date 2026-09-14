@@ -9,7 +9,10 @@ annotate_spectra(mass, debugL = FALSE)
 \arguments{
 \item{mass}{A numeric vector}
 
-\item{debugL}{logical to print debug message}
+\item{debugL}{logisfggdcal to print debug message}
+}
+\value{
+Return a numeric vector of network edges
 }
 \description{
 This function returns edges of networked

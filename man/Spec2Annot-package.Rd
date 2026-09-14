@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-An R package for annotating and querying mass spectra using brute-force, isotopic, fragmentation patterns, and prior knowledge (e.g., losses or adducts).
+Provides a comprehensive suite of functions to efficiently annotate mass spectra data. Motivated by the need for rapid and accurate chemical identification in high-resolution mass spectrometry, it integrates built-in chemical databases and high-performance C++ algorithms. Users can perform mass-to-charge (m/Z) and retention time searches, determine elemental compositions of molecules using heuristic rules, including specific isotopes, and annotate MS2 spectra with structural metrics using configurable chemistry rules.
 }
 \seealso{
 Useful links:

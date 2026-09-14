@@ -13,6 +13,9 @@ get_range(input, valA, valB)
 
 \item{valB}{a numeric value for the higher bound}
 }
+\value{
+An \code{integer} vector of closest indexes found
+}
 \description{
 Get index in range
 }

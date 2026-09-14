@@ -10,6 +10,7 @@ using namespace Rcpp;
 //'
 //' @param massa First mass
 //' @param massb Second mass
+//' @return ppm as a `numeric` value between `massa` and `massb`.
 //' @export
 //'
 // [[Rcpp::export]]
@@ -26,6 +27,7 @@ double mz_ppm(
 //'
 //' @param mass First mass
 //' @param ppm ppm tolerance mass +- ppm(mass)
+//' @return A `numeric vector` with the mass window.
 //' @export
 //'
 // [[Rcpp::export]]

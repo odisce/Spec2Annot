@@ -7,8 +7,8 @@ using namespace Rcpp;
 //' @param input a numeric vector
 //' @param valA a numeric value for the lower bound
 //' @param valB a numeric value for the higher bound
-//' @export
-//'
+//' @return An `integer` vector of closest indexes found
+//' 
 // [[Rcpp::export]]
 std::vector<int> get_range(std::vector<double> input, double valA, double valB) {
   std::vector<int> output(2, 0);
@@ -59,11 +59,20 @@ std::vector<size_t> sorted_index(Rcpp::NumericVector& indt) {
 //' @param exp_dt a data.frame with at least mz and rt values (exp table)
 //' @param ppmtol a numeric value for the ppm tolerance
 //' @param rttol a numeric value for the rt tolerance
-//' @param debugL logical to print debug message
+//' @param debugL logisfggdcal to print debug message
+//' 
+//' @return A `data.frame` with matched entries between db_dt and exp_dt.
+//' 
 //' @export
 //'
 // [[Rcpp::export]]
-Rcpp::DataFrame match_tables(DataFrame db_dt, DataFrame exp_dt, double ppmtol, double rttol, bool debugL = false) {
+Rcpp::DataFrame match_tables(
+  Rcpp::DataFrame db_dt,
+  Rcpp::DataFrame exp_dt,
+  double ppmtol,
+  double rttol,
+  bool debugL = false
+) {
   Rcpp::NumericVector mzrange(2), rtrange(2);
   Rcpp::NumericVector bigMZ, smallMZ, bigRT, smallRT;
 
@@ -163,52 +172,4 @@ Rcpp::DataFrame match_tables(DataFrame db_dt, DataFrame exp_dt, double ppmtol, d
   );
   
   return result;
-      
-
-
-  // // Extract columns from table A
-  // if (ppmtol) {
-  //   mz_A = db_dt["mz"];
-  //   mz_B = exp_dt["mz"];
-  // } else {
-  //   mz_A(db_dt.nrows());
-  //   mz_B(exp_dt.nrows());
-  // }
-  // if (rttol) {
-  //   rt_A = db_dt["rt"];
-  //   rt_B = exp_dt["rt"];
-  // } else {
-  //   rt_A(db_dt.nrows());
-  //   rt_B(exp_dt.nrows());
-  // }
-  
-  // std::vector<int> matched_B_index; // To store which row in B the match corresponds to
-  // std::vector<int> matched_A_index; // To store which row in A the match corresponds to
-  // // Loop through each row in table B
-  // for (int i = 0; i < exp_dt.nrows(); ++i) {
-  //   // Loop through each row in table A
-  //   if (ppmtol) {
-  //     mzrange = mz_range(mz_B[i], ppmtol);
-  //   } else {
-  //     mzrange = {0, 0};
-  //   }
-  //   if (rttol) {
-  //     rtrange = {rt_B[i] - rttol, rt_B[i] + rttol};
-  //   } else {
-  //     rtrange = {0, 0};
-  //   }
-  //   for (int j = 0; j < db_dt.nrows(); ++j) {
-  //     // Check if mz and rt from A are within the ranges specified in B
-  //     if (
-  //         (mz_A[j] >= mzrange[0] && mz_A[j] <= mzrange[1]) &&
-  //         (rt_A[j] >= rtrange[0] && rt_A[j] <= rtrange[1])
-  //     ) {
-  //       // Store the matching rows from A
-  //       matched_A_index.push_back(j + 1); // +1 to convert to R indexing
-  //       matched_B_index.push_back(i + 1); // +1 to convert to R indexing
-  //     }
-  //   }
-  // }
-  
-
 }

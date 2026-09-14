@@ -15,7 +15,10 @@ match_tables(db_dt, exp_dt, ppmtol, rttol, debugL = FALSE)
 
 \item{rttol}{a numeric value for the rt tolerance}
 
-\item{debugL}{logical to print debug message}
+\item{debugL}{logisfggdcal to print debug message}
+}
+\value{
+A \code{data.frame} with matched entries between db_dt and exp_dt.
 }
 \description{
 This function match two table, searching every

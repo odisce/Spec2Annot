@@ -5,7 +5,13 @@
 \alias{Isotopes_db}
 \title{isotopes data}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 12 rows and 4 columns.
+A \code{data.table} with the common isotopes found in LC-ESI-MS
+\describe{
+\item{isotope}{Isotope formula}
+\item{mass}{Exact mass}
+\item{abundance}{Natural abundance (in percent)}
+\item{mass_diff}{Exact mass difference from non-isotopic element}
+}
 }
 \usage{
 Isotopes_db

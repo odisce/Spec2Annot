@@ -13,6 +13,10 @@ using namespace Rcpp;
 //' @param name_vc Vector of elemnt names (size = n)
 //' @param debugl Integer (0: no message, 1: short, 2: verbose)
 //' @param debugit Integer for max iter to do
+//' 
+//' @return A NumericMatrix containing the count of elements, exact mass `mass`,
+//'         `ppm` deviation and `iteration` number of solutions found by the
+//'         brute force algorithm.
 //' @export
 //'
 // [[Rcpp::export]]
@@ -165,8 +169,7 @@ Rcpp::NumericMatrix brute_force_const(
   Rcpp::NumericMatrix bc(out_doubleN, out_doublev.size()/out_doubleN, out_doublev.begin());
   Rcpp::NumericMatrix b = transpose(bc);
 
-  // This part comes from: 
-  // https://stackoverflow.com/a/31921185
+  // inspired from: https://stackoverflow.com/a/31921185
   int acoln = a.ncol();
   int bcoln = b.ncol();
   Rcpp::NumericMatrix out = Rcpp::no_init(a.nrow(), acoln + bcoln);

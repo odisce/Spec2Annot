@@ -11,6 +11,9 @@ mz_ppm(massa = 120.1253, massb = 120.1263)
 
 \item{massb}{Second mass}
 }
+\value{
+ppm as a \code{numeric} value between \code{massa} and \code{massb}.
+}
 \description{
 This function returns a numeric value
 corresponding to the mass deviation

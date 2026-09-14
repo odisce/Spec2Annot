@@ -5,7 +5,12 @@
 \alias{Losses_db}
 \title{losses data}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 182 rows and 3 columns.
+A \code{data.table} with the common losses found in LC-ESI-MS
+\describe{
+\item{loss}{loss formula}
+\item{mz_query}{Exact mass}
+\item{encod}{Character encoding}
+}
 }
 \usage{
 Losses_db

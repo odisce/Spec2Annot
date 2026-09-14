@@ -5,7 +5,14 @@
 \alias{Element}
 \title{Periodic table as a data.table}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 354 rows and 5 columns.
+A \code{data.table} with the Periodic Table Elements fields
+\describe{
+\item{atomic_nb}{Atomic number}
+\item{atomic_symb}{Atomic symbol}
+\item{mass_nb}{Mass number}
+\item{atomic_mass}{Exact atomic mass}
+\item{isotopic_compo}{Relative isotopic abundance}
+}
 }
 \usage{
 Element

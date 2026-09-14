@@ -11,6 +11,9 @@ mz_vec_aggregate(xx, tt)
 
 \item{tt}{Tolerance in absolute m/Z to group peaks}
 }
+\value{
+A \verb{numeric vector} with group indexes
+}
 \description{
 This function returns a matrix with m/Z groups
 based on a tolerance.

@@ -5,7 +5,13 @@
 \alias{ions_database}
 \title{ions data}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 958 rows and 6 columns.
+A \code{data.table} with the common ions found in LC-ESI-MS
+\describe{
+\item{Attribution}{Encoded formula}
+\item{exact_mass}{Exact mass formula as a character string}
+\item{charge}{charge}
+\item{Type}{Molecular form (Monocharge, Loss, Adduct, ...)}
+}
 }
 \usage{
 ions_database

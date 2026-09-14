@@ -5,7 +5,13 @@
 \alias{db_monocharge}
 \title{Mono charged ions}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 11 rows and 4 columns.
+A \code{data.table} with the common charges in LC-ESI-MS
+\describe{
+\item{Formula}{Formula}
+\item{charge}{charge}
+\item{lossL}{Does the resulting ion can produce in-source losses ?}
+\item{mz_query}{Exact mass value}
+}
 }
 \usage{
 db_monocharge

@@ -456,33 +456,33 @@ gen_losses <- function(mz, label = NULL, mz_type = c("neutral", "pos", "neg")[[1
 }
 
 
-#' Title
-#'
-#' @param mass
-#' @param ppm
-#'
-#' @return
-#' @export
-#'
-#' @examples
-mz_range <- function(mass, ppm) {
-  mass + (ppm * mass / 10^6 / 2) * c(-1, 1)
-}
+# #' Title
+# #'
+# #' @param mass
+# #' @param ppm
+# #'
+# #' @return
+# #' @export
+# #'
+# #' @examples
+# mz_range <- function(mass, ppm) {
+#   mass + (ppm * mass / 10^6 / 2) * c(-1, 1)
+# }
 
-#' Title
-#'
-#' @param massa
-#' @param massb
-#'
-#' @return
-#' @export
-#'
-#' @examples
-mz_ppm <- function(massa, massb) {
-  data <- c(massa, massb)
-  mass_error <- max(data) - min(data)
-  return((mass_error / mean(data)) * 10^6)
-}
+# #' Title
+# #'
+# #' @param massa
+# #' @param massb
+# #'
+# #' @return 
+# #' @export
+# #'
+# #' @examples
+# mz_ppm <- function(massa, massb) {
+#   data <- c(massa, massb)
+#   mass_error <- max(data) - min(data)
+#   return((mass_error / mean(data)) * 10^6)
+# }
 
 #' Get sign from annotation
 #'

@@ -11,35 +11,6 @@ void fun_print (int i) {
   Rcpp::Rcout << i << ' ';
 };
 
-//' Find all combination
-//'
-//' This function returns edges of networked
-//' ions
-//'
-//' @param n number of pairs to create
-//' @param r number of element in each pairs
-//' @export
-//'
-// [[Rcpp::export]]
-int find_comb(int n, int r) {
-    // int n = 100;
-    // int r = 2;
-    std::vector<int> myints(r);
-    std::vector<int>::iterator first = myints.begin(), last = myints.end();
-    std::generate(first, last, UniqueNumber);
-    std::for_each(first, last, fun_print);
-    Rcpp::Rcout << std::endl;
-    while((*first) != n-r+1){
-        std::vector<int>::iterator mt = last;
-        while (*(--mt) == n-(last-mt)+1);
-        (*mt)++;
-        while (++mt != last) *mt = *(mt-1)+1;
-        std::for_each(first, last, fun_print);
-        Rcpp::Rcout << std::endl;
-    }
-    return 0;
-}
-
 //' Annotate a matrix and return network edges
 //'
 //' This function returns edges of networked
@@ -47,6 +18,7 @@ int find_comb(int n, int r) {
 //'
 //' @param mass A numeric vector
 //' @inheritParams match_tables
+//' @return Return a numeric vector of network edges
 //' @export
 //'
 // [[Rcpp::export]]

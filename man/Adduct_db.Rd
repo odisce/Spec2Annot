@@ -5,7 +5,12 @@
 \alias{Adduct_db}
 \title{adduct data}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 5 rows and 3 columns.
+A \code{data.table} with the common adducts in LC-ESI-MS
+\describe{
+\item{adduct}{Formula}
+\item{charge}{charge}
+\item{mz_query}{Exact mass value}
+}
 }
 \usage{
 Adduct_db

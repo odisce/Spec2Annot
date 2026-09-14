@@ -29,6 +29,11 @@ brute_force_const(
 
 \item{debugit}{Integer for max iter to do}
 }
+\value{
+A NumericMatrix containing the count of elements, exact mass \code{mass},
+\code{ppm} deviation and \code{iteration} number of solutions found by the
+brute force algorithm.
+}
 \description{
 This function returns a matrix with m/Z groups
 based on a tolerance.

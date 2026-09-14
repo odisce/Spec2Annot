@@ -13,23 +13,14 @@
 #' @param name_vc Vector of elemnt names (size = n)
 #' @param debugl Integer (0: no message, 1: short, 2: verbose)
 #' @param debugit Integer for max iter to do
+#' 
+#' @return A NumericMatrix containing the count of elements, exact mass `mass`,
+#'         `ppm` deviation and `iteration` number of solutions found by the
+#'         brute force algorithm.
 #' @export
 #'
 brute_force_const <- function(mass = 120, ppm = 5, mass_vc = 0L, maxiter_vc_ = NULL, name_vc = 0L, debugl = 0L, debugit = 0L) {
     .Call(`_Spec2Annot_brute_force_const`, mass, ppm, mass_vc, maxiter_vc_, name_vc, debugl, debugit)
-}
-
-#' Find all combination
-#'
-#' This function returns edges of networked
-#' ions
-#'
-#' @param n number of pairs to create
-#' @param r number of element in each pairs
-#' @export
-#'
-find_comb <- function(n, r) {
-    .Call(`_Spec2Annot_find_comb`, n, r)
 }
 
 #' Annotate a matrix and return network edges
@@ -39,6 +30,7 @@ find_comb <- function(n, r) {
 #'
 #' @param mass A numeric vector
 #' @inheritParams match_tables
+#' @return Return a numeric vector of network edges
 #' @export
 #'
 annotate_spectra <- function(mass, debugL = FALSE) {
@@ -56,6 +48,7 @@ combn_cpp <- function(m, r) {
 #'
 #' @param xx A numeric and sorted vector of m/Z
 #' @param tt Tolerance in absolute m/Z to group peaks
+#' @return A `numeric vector` with group indexes
 #' @export
 #'
 mz_vec_aggregate <- function(xx, tt) {
@@ -67,8 +60,8 @@ mz_vec_aggregate <- function(xx, tt) {
 #' @param input a numeric vector
 #' @param valA a numeric value for the lower bound
 #' @param valB a numeric value for the higher bound
-#' @export
-#'
+#' @return An `integer` vector of closest indexes found
+#' 
 get_range <- function(input, valA, valB) {
     .Call(`_Spec2Annot_get_range`, input, valA, valB)
 }
@@ -83,7 +76,10 @@ get_range <- function(input, valA, valB) {
 #' @param exp_dt a data.frame with at least mz and rt values (exp table)
 #' @param ppmtol a numeric value for the ppm tolerance
 #' @param rttol a numeric value for the rt tolerance
-#' @param debugL logical to print debug message
+#' @param debugL logisfggdcal to print debug message
+#' 
+#' @return A `data.frame` with matched entries between db_dt and exp_dt.
+#' 
 #' @export
 #'
 match_tables <- function(db_dt, exp_dt, ppmtol, rttol, debugL = FALSE) {
@@ -98,6 +94,7 @@ match_tables <- function(db_dt, exp_dt, ppmtol, rttol, debugL = FALSE) {
 #'
 #' @param massa First mass
 #' @param massb Second mass
+#' @return ppm as a `numeric` value between `massa` and `massb`.
 #' @export
 #'
 mz_ppm <- function(massa = 120.1253, massb = 120.1263) {
@@ -108,6 +105,7 @@ mz_ppm <- function(massa = 120.1253, massb = 120.1263) {
 #'
 #' @param mass First mass
 #' @param ppm ppm tolerance mass +- ppm(mass)
+#' @return A `numeric vector` with the mass window.
 #' @export
 #'
 mz_range <- function(mass = 120.1253, ppm = 10) {

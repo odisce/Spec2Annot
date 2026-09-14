@@ -11,6 +11,9 @@ mz_range(mass = 120.1253, ppm = 10)
 
 \item{ppm}{ppm tolerance mass +- ppm(mass)}
 }
+\value{
+A \verb{numeric vector} with the mass window.
+}
 \description{
 Get mass range with ppm
 }

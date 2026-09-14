@@ -5,7 +5,11 @@
 \alias{valence_db}
 \title{Valence data}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 117 rows and 2 columns.
+A \code{data.table} with element valence
+\describe{
+\item{atomic_symb}{Atomic symbol}
+\item{valence}{valence value}
+}
 }
 \usage{
 valence_db
