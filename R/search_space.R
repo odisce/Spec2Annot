@@ -34,31 +34,30 @@ get_element_from_mass <- function(mass, use_golden_ratio = FALSE) {
     elmt_cnt <- lapply(
       element_vec,
       function(x) {
-        elmt_nb <- ceiling(
-          (
-            mass / Spec2Annot::Element[
+        mass_n <- {
+          mass / Spec2Annot::Element[
               grepl(paste0("^", x, "$"), atomic_symb),
             ][
               which.max(isotopic_compo), atomic_mass
             ]
-          )
-        )
+        }
+        elmt_nb <- ceiling(mass_n)
         paste0(x, elmt_nb)
       }
     )
     output <- paste0(elmt_cnt, collapse = "")
     return(output)
   } else {
-    c_nb <- (mass / 12) %>% ceiling()
-    h_nb <- c_nb * 3.1 %>% ceiling()
-    f_nb <- c_nb * 1.5 %>% ceiling()
-    cl_nb <- c_nb * 0.8 %>% ceiling()
-    br_nb <- c_nb * 0.8 %>% ceiling()
-    n_nb <- c_nb * 1.3 %>% ceiling()
-    o_nb <- c_nb * 1.2 %>% ceiling()
-    p_nb <- c_nb * 0.3 %>% ceiling()
-    s_nb <- c_nb * 0.8 %>% ceiling()
-    si_nb <- c_nb * 0.5 %>% ceiling()
+    c_nb <- ceiling(mass / 12)
+    h_nb <- ceiling(c_nb * 3.1)
+    f_nb <- ceiling(c_nb * 1.5)
+    cl_nb <- ceiling(c_nb * 0.8)
+    br_nb <- ceiling(c_nb * 0.8)
+    n_nb <- ceiling(c_nb * 1.3)
+    o_nb <- ceiling(c_nb * 1.2)
+    p_nb <- ceiling(c_nb * 0.3)
+    s_nb <- ceiling(c_nb * 0.8)
+    si_nb <- ceiling(c_nb * 0.5)
   }
   compo <- paste0(
     "C", c_nb,

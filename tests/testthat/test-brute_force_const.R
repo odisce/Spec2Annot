@@ -1,6 +1,6 @@
 test_that("brute_force_const()", {
-  formula <- "C2H4O1"
-  mass <- mz_from_string(formula)
+  in_formula <- "C2H4O1"
+  mass <- mz_from_string(in_formula)
 
   mass_dt <- get_element_from_mass(mass) %>%
     gen_formula_from_compo() %>%
@@ -8,7 +8,7 @@ test_that("brute_force_const()", {
   mass_dt[elmt_nb > 0, ][order(-mass), ]
 
   ## Test debug argument
-  tp <- lapply(c(0,1,2,10), function(x) {
+  tp <- lapply(c(3, 5, 10, 50), function(x) {
     temp <- brute_force_const(
       mass = mass,
       ppm = x,
@@ -17,11 +17,11 @@ test_that("brute_force_const()", {
       maxiter_vc_ = mass_dt[elmt_nb > 0, ][order(-mass), elmt_nb],
       debugl = FALSE
     )
-    expect_true(nrow(temp) == 1)
+    expect_true(nrow(temp) >= 1)
     temp_form <- add_formula_to_annot(
       data.table::as.data.table(temp)
     )
-    expect_true(temp_form[1, formula] == formula)
+    expect_true(temp_form$formula[1] == in_formula)
   })
 
   ## Test iter

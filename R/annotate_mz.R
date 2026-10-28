@@ -87,15 +87,19 @@ annotate_mz <- function(
   ), by = ion_iter]
 
   ## Add H to neutral formula for the search
-  compo_ion <- compo
-  compo_elem_dt <- gen_formula_from_compo(compo) %>%
-    element_from_formula()
-  if (!is.null(polarity) && polarity == 0) {
-    compo_ion <- compo_elem_dt[element == "H", elmt_nb := elmt_nb - 1][] %>%
-      string_from_element()
-  } else if (!is.null(polarity) && polarity == 1) {
-    compo_ion <- compo_elem_dt[element == "H", elmt_nb := elmt_nb + 1][] %>%
-      string_from_element()
+  if (!is.null(compo)) {
+    compo_ion <- compo
+    compo_elem_dt <- gen_formula_from_compo(compo) %>%
+      element_from_formula()
+    if (!is.null(polarity) && polarity == 0) {
+      compo_ion <- compo_elem_dt[element == "H", elmt_nb := elmt_nb - 1][] %>%
+        string_from_element()
+    } else if (!is.null(polarity) && polarity == 1) {
+      compo_ion <- compo_elem_dt[element == "H", elmt_nb := elmt_nb + 1][] %>%
+        string_from_element()
+    }
+  } else {
+    compo_ion <- NULL
   }
 
   ## Annotate

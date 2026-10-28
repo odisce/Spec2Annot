@@ -2,11 +2,16 @@ testthat::test_that("annotat_mz()", {
   lapply(
     c(
       "C10H12N5O6P1",
-      "C10H12O6P1"
+      "C10H12O6P1",
+      ""
     ),
     function(x) {
+      if (x == "") {
+        x <- NULL
+        spectra_ms2 <- spectra_ms2[1:15,]
+      }
       spec_res <- annotate_mz(
-        spectra_ms2,
+        input_spectrum = spectra_ms2,
         ppm = 3,
         polarity = 1,
         compo = x
