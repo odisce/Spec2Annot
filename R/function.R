@@ -19,6 +19,52 @@ CJ1 <- function(DT1, DT2){
   DT1[ , c(.SD, DT2), by = seq_len(nrow(DT1))]
 }
 
+#' Get isotopes from single patterns
+#'
+#' @param iso_pattern character vector with single pattern corresponding to isotops ("13C", "13C4", "D", "2D1", "15N2", ...)
+#'
+#' @return
+#' Return a data.table with the following isotopes informations:
+#'   - `element`: element type (13C, 18O, ...)
+#'   - `text`: label to use for the element
+#'   - `elmt_nb`: Element count
+#'   - `isotope`: Isotope number (13, 18, ...)
+#'   - `mass`: Mass of the isotope
+#'   - `ID`: Unique identifier (`integer`)
+#'
+#' @export
+#'
+#' @examples
+#' get_iso_from_pattern("[M+H]+_13C_18O")
+#' get_iso_from_pattern("[M+H]+_13C2_D2")
+get_iso_from_pattern <- function(iso_pattern = c("13C", "D")) {
+  ## For each iso, get Elmt and nb
+  pattern <- "^([0-9]*)([A-Za-z]+)([0-9]*)$"
+  matches <- regexec(pattern, iso_pattern)
+  parts <- regmatches(iso_pattern, matches)
+  output <- lapply(parts, function(x) {
+    tp_i <- data.table::data.table(
+      "label" = x[1],
+      "atomic_symb" = if (nzchar(x[3])) x[3] else cli::cli_abort("missing elemt in {formula} - {x}: {x[3]}"),
+      "mass_nb" = if (nzchar(x[2])) x[2] else Spec2Annot::Element[atomic_symb == x[3], unique(mass_nb)],
+      "atomic_nb" = Spec2Annot::Element[atomic_symb == x[3], unique(atomic_nb)],
+      "elmt_nb" = if (nzchar(x[4])) as.integer(x[4]) else 1
+    )
+    tp_i[, text := paste0(mass_nb, atomic_symb, elmt_nb)]
+    out_i <- Spec2Annot::Element[tp_i, on = c("mass_nb", "atomic_symb", "atomic_nb")]
+    ## Add main natural element
+    main.dt <- Spec2Annot::Element[atomic_nb %in% out_i[, unique(atomic_nb)], ][order(-isotopic_compo), lapply(.SD, head, 1), by = .(atomic_nb)][, .(atomic_nb, elmt_main = atomic_symb)]
+    out_i <- merge(
+      out_i,
+      main.dt,
+      by = "atomic_nb"
+    )
+    out_i[]
+  }) |>
+    data.table::rbindlist()
+  output[]
+}
+
 #' Get isotopes from annotation
 #'
 #' @param annotation Annotation in the form of `[M+H]+_13C1`
@@ -38,44 +84,13 @@ CJ1 <- function(DT1, DT2){
 #' get_iso_from_annot("[M+H]+_13C_18O")
 #' get_iso_from_annot("[M+H]+_13C2")
 get_iso_from_annot <- function(annotation) {
+  # annotation <- "C6H12O2_13C1"
   if (grepl("_", annotation)) {
     # Check if isotopes are present by detecting "_"
     temp <- tstrsplit(annotation, "_") %>% unlist()
     annotation <- temp[1]
-
-    ## For each iso, get Elmt and nb
-    output <- data.table(
-      "element" = gsub(
-        "([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})",
-        "\\1\\2",
-        temp[-1]
-      ),
-      "text" = temp[-1],
-      "elmt_nb" = gsub(
-        "([0-9]{1,2})([A-Z]{1}[a-z]{0,1})([0-9]{0,3})",
-        "\\3",
-        temp[-1]
-      )
-    )
-
-    output <- merge(
-      output,
-      Spec2Annot::Element[,
-        .(
-          element = paste0(mass_nb, atomic_symb),
-          isotope = mass_nb,
-          mass = atomic_mass
-        )
-      ],
-      by = "element"
-    ) %>% {
-      .[, ID := seq_len(.N)][
-        elmt_nb == "", elmt_nb := 1
-      ][,
-        elmt_nb := as.numeric(elmt_nb)
-      ][]
-    }
-
+    output <- get_iso_from_pattern(temp)
+    output <- output[, .(element = paste0(mass_nb, atomic_symb), text, elmt_nb, isotope = mass_nb, mass = atomic_mass, elmt_main, ID = seq_len(.N))]
     if (nrow(output) <= 0) {
       return(FALSE)
     } else {
@@ -338,6 +353,7 @@ electron_mass <- function() {
 #' element_from_formula(formula)
 #'
 element_from_formula <- function(formula) {
+  # formula <- "C17H32Cl2_D5"
   if (!grepl("\\*", formula)) {
     formula <- gen_formula_from_compo(formula)
   }
@@ -376,15 +392,13 @@ element_from_formula <- function(formula) {
 
   ## Remove isotopes from elements
   if (!isFALSE(iso_res)) {
-    iso_res[, ID := seq_len(.N)]
     iso_res[, {
-      elem <- gsub("[0-9]{1,2}([A-Z]{1}[a-z]{0,2})", "\\1", element)
       nb_to_rem <- as.numeric(elmt_nb)
-      in_tp <- temp[element == elem]
+      in_tp <- temp[element == elmt_main]
       if (nrow(in_tp) == 0) {
         stop("Isotopes present when main atom is not ?")
       } else {
-        temp[element == elem, elmt_nb := elmt_nb - nb_to_rem]
+        temp[element == elmt_main, elmt_nb := elmt_nb - nb_to_rem]
       }
     }, by = ID]
     temp <- rbindlist(

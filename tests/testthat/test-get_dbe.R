@@ -16,10 +16,11 @@ testthat::test_that("Spec2Annot::get_dbe", {
       "C3H6BrN",
       "C9H11ClN4O2",
       "C17H32Cl2",
+      "C17H32Cl2_D5",
       "C17H32Cl2_13C7",
       "C17H32Cl2_13C2",
       "C17H32Cl2_13C2_37Cl1"
     ),
-    c(0, 1, 2, 22, 0, 4, 1, 6, 1, 1, 1, 1)
+    c(0, 1, 2, 22, 0, 4, 1, 6, 1, 3.5, 1, 1, 1)
   )
 })
